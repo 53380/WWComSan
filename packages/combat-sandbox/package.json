@@ -1,0 +1,22 @@
+{
+  "name": "@tba-worldswithin/combat-sandbox",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "src/index.js",
+  "module": "src/index.js",
+  "exports": {
+    ".": {
+      "import": "./src/index.js"
+    },
+    "./styles.css": "./styles.css",
+    "./package.json": "./package.json"
+  },
+  "sideEffects": ["./styles.css"],
+  "peerDependencies": {
+    "react": ">=17",
+    "react-dom": ">=17"
+  },
+  "dependencies": {
+    "lucide-react": "^0.360.0"
+  }
+}
