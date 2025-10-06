@@ -1,4 +1,4 @@
-export const ATTRIBUTES = ['STR', 'DEX', 'TOU', 'AGI', 'SPR', 'INS', 'CHA'];
+export const ATTRIBUTES = ['STR', 'DEX', 'TOU', 'AGI', 'SPR', 'INS', 'CHA', 'Impact'];
 
 export const ELEMENTS = ['Fire', 'Water', 'Stone', 'Air', 'Spark', 'Verdant', 'Essence'];
 
@@ -156,7 +156,7 @@ export const ABILITIES = [
 ];
 
 export const initialCharacter = {
-  attributes: { STR: 40, DEX: 40, TOU: 40, AGI: 40, SPR: 40, INS: 40, CHA: 40 },
+  attributes: { STR: 40, DEX: 40, TOU: 40, AGI: 40, SPR: 40, INS: 40, CHA: 40, Impact: 40 },
   elements: { Fire: 40, Water: 40, Stone: 40, Air: 40, Spark: 40, Verdant: 40, Essence: 40 },
   weapon: 'Long Swords',
   currentER: 100,
@@ -172,7 +172,7 @@ export const initialEnemy = {
   maxHp: 500,
   currentER: 100,
   maxER: 100,
-  attributes: { STR: 40, DEX: 40, TOU: 40, AGI: 40, SPR: 40, INS: 40, CHA: 40 },
+  attributes: { STR: 40, DEX: 40, TOU: 40, AGI: 40, SPR: 40, INS: 40, CHA: 40, Impact: 40 },
   elements: { Fire: 40, Water: 40, Stone: 40, Air: 40, Spark: 40, Verdant: 40, Essence: 40 },
   weapon: 'Staffs',
   aiEnabled: false,
