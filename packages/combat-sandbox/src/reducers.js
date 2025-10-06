@@ -15,19 +15,24 @@ export function characterReducer(state, action) {
     case 'TAKE_DAMAGE': {
       const mitigation = state.activeDefense ? state.activeDefense.mitigationMultiplier : 1.0;
       const touArmor = 1 - (state.attributes.TOU / 100) * 0.20;
+      const didDodge = !action.skipDodge && Boolean(action.didDodge);
 
-      if (!action.skipDodge) {
-        const agiDodgeChance = (state.attributes.AGI / 100) * 0.15;
-        if (Math.random() < agiDodgeChance) {
-          return { ...state, currentER: Math.min(100, state.currentER + 4), lastDodge: Date.now() };
-        }
+      if (didDodge) {
+        const erGain = action.dodgeErGain ?? 4;
+        const nextEr = Math.min(100, state.currentER + erGain);
+        return {
+          ...state,
+          currentER: nextEr,
+          ...(action.dodgeTimestamp != null ? { lastDodge: action.dodgeTimestamp } : {})
+        };
       }
 
       const finalDamage = Math.round(action.amount * mitigation * touArmor);
+      const erGain = action.erOnHit ?? 1;
       return {
         ...state,
         hp: Math.max(0, state.hp - finalDamage),
-        currentER: Math.min(100, state.currentER + 1)
+        currentER: Math.min(100, state.currentER + erGain)
       };
     }
     case 'HEAL':
@@ -39,23 +44,34 @@ export function characterReducer(state, action) {
     case 'CLEAR_DEFENSE':
       return { ...state, activeDefense: null };
     case 'ADD_CC': {
-      const cappedDuration = Math.min(action.duration, 2.0);
+      const ccEffect = action.ccEffect ?? {
+        type: action.ccType,
+        duration: Math.min(action.duration ?? 0, 2.0),
+        applied: action.applied ?? 0,
+        expiresAt:
+          action.expiresAt ?? (action.applied ?? 0) + Math.min(action.duration ?? 0, 2.0) * 1000
+      };
+
+      if (!ccEffect) {
+        return state;
+      }
+
       return {
         ...state,
-        ccEffects: [
-          ...state.ccEffects,
-          {
-            type: action.ccType,
-            duration: cappedDuration,
-            applied: Date.now()
-          }
-        ]
+        ccEffects: [...state.ccEffects, ccEffect]
       };
     }
     case 'UPDATE_CC':
+      if (typeof action.currentTime !== 'number') {
+        return state;
+      }
+
       return {
         ...state,
-        ccEffects: state.ccEffects.filter((cc) => (Date.now() - cc.applied) / 1000 < cc.duration)
+        ccEffects: state.ccEffects.filter((cc) => {
+          const expiresAt = cc.expiresAt ?? (cc.applied ?? 0) + (cc.duration ?? 0) * 1000;
+          return action.currentTime < expiresAt;
+        })
       };
     default:
       return state;
@@ -83,23 +99,34 @@ export function enemyReducer(state, action) {
     case 'CLEAR_DEFENSE':
       return { ...state, activeDefense: null };
     case 'ADD_CC': {
-      const cappedDuration = Math.min(action.duration, 2.0);
+      const ccEffect = action.ccEffect ?? {
+        type: action.ccType,
+        duration: Math.min(action.duration ?? 0, 2.0),
+        applied: action.applied ?? 0,
+        expiresAt:
+          action.expiresAt ?? (action.applied ?? 0) + Math.min(action.duration ?? 0, 2.0) * 1000
+      };
+
+      if (!ccEffect) {
+        return state;
+      }
+
       return {
         ...state,
-        ccEffects: [
-          ...state.ccEffects,
-          {
-            type: action.ccType,
-            duration: cappedDuration,
-            applied: Date.now()
-          }
-        ]
+        ccEffects: [...state.ccEffects, ccEffect]
       };
     }
     case 'UPDATE_CC':
+      if (typeof action.currentTime !== 'number') {
+        return state;
+      }
+
       return {
         ...state,
-        ccEffects: state.ccEffects.filter((cc) => (Date.now() - cc.applied) / 1000 < cc.duration)
+        ccEffects: state.ccEffects.filter((cc) => {
+          const expiresAt = cc.expiresAt ?? (cc.applied ?? 0) + (cc.duration ?? 0) * 1000;
+          return action.currentTime < expiresAt;
+        })
       };
     default:
       return state;
