@@ -55,4 +55,42 @@ describe('CombatSandbox component', () => {
     expect(await screen.findByText('Echo Pierce hits for 12 damage')).toBeInTheDocument();
     expect(await screen.findByText('+4 ER')).toBeInTheDocument();
   });
+
+  it('applies the healing component of Regrowth Pulse', async () => {
+    const user = userEvent.setup({ delay: null });
+
+    const characterState = {
+      ...initialCharacter,
+      attributes: {
+        ...initialCharacter.attributes,
+        SPR: 90,
+        CHA: 80
+      },
+      elements: {
+        ...initialCharacter.elements,
+        Verdant: 90
+      }
+    };
+
+    render(
+      <CombatSandbox
+        initialCharacterState={characterState}
+        initialEnemyState={initialEnemy}
+        abilityLoadout={{ attack: 'verdant_attack', defense: 'fire_defense', control: 'fire_control', special: 'verdant_special' }}
+      />
+    );
+
+    const specialButton = await screen.findByRole('button', { name: /Regrowth Pulse/i });
+
+    await user.click(specialButton);
+
+    expect(await screen.findByText(/Casting Regrowth Pulse/)).toBeInTheDocument();
+
+    await act(async () => {
+      vi.advanceTimersByTime(1000);
+      await Promise.resolve();
+    });
+
+    expect(await screen.findByText('Regrowth Pulse heals for 809 HP')).toBeInTheDocument();
+  });
 });
