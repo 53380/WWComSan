@@ -1,0 +1,12 @@
+{
+  "name": "wwcomsan",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "pages/*"
+  ],
+  "scripts": {
+    "test": "npm run test --workspace @tba-worldswithin/combat-sandbox"
+  }
+}
