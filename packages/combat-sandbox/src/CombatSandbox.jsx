@@ -652,7 +652,7 @@ export function CombatSandbox({
               Combat Lanes
             </h3>
 
-            <div className="grid grid-cols-4 gap-2 mb-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2 mb-3">
               {['attack', 'defense', 'control', 'special'].map((lane) => {
                 const variant = lane === 'attack' ? 'Attack' : lane === 'defense' ? 'Defense' : lane === 'control' ? 'Control' : 'Special';
                 const relevantAbilities = getRelevantAbilities(variant);
@@ -682,7 +682,7 @@ export function CombatSandbox({
               })}
             </div>
 
-            <div className="grid grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
               {[
                 { ability: getAbility(selectedAbilities.attack), lane: 'A' },
                 { ability: getAbility(selectedAbilities.defense), lane: 'D' },
@@ -695,6 +695,12 @@ export function CombatSandbox({
                 const meetsResonance = !ability.requiresResonance || cost.resonance >= ability.requiresResonance;
                 const canCast = canAfford && meetsResonance && combatState.state === COMBAT_STATES.IDLE;
                 const styles = LANE_STYLES[ability.variant];
+                const prospectiveDamage = ability.baseDamage ? calculateDamage(ability, character) : 0;
+                const prospectiveHealing = ability.baseHealing ? calculateHealing(ability, character) : 0;
+                const timing = calculateAnimationTiming(character.weapon, character.attributes.AGI);
+                const cancelRefund = cost.finalCost * 0.4;
+                const weaponData = WEAPONS[character.weapon] || {};
+                const erOnHit = weaponData.erGainedOnHit ?? 0;
 
                 return (
                   <button
@@ -720,6 +726,25 @@ export function CombatSandbox({
                       {cost.finalCost.toFixed(1)}
                     </div>
                     <div className="text-xs text-gray-400">ER</div>
+                    <div className="mt-1 text-[0.7rem] text-gray-300 flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
+                      <span title="Estimated damage output">
+                        ≈{prospectiveDamage > 0 ? `${prospectiveDamage}` : '—'} dmg
+                      </span>
+                      <span title="Estimated healing output">
+                        ≈{prospectiveHealing > 0 ? `${prospectiveHealing}` : '—'} heal
+                      </span>
+                      <span title="Approximate wind-up time">wind-up {timing.windUp.toFixed(2)}s</span>
+                    </div>
+                    <div className="mt-2 text-[0.65rem] text-gray-400 flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
+                      <span title="Energy refunded if you cancel during wind-up">
+                        Cancel refund ≈{cancelRefund.toFixed(1)} ER
+                      </span>
+                      {ability.variant === 'Attack' && erOnHit > 0 && (
+                        <span title="Energy returned on a successful hit with this weapon">
+                          On-hit +{erOnHit} ER
+                        </span>
+                      )}
+                    </div>
                     <div className="text-xs mt-1 text-gray-300">{ability.description}</div>
                     {ability.requiresResonance && (
                       <div
@@ -773,6 +798,8 @@ export function CombatSandbox({
                     className={`py-1.5 px-2 rounded text-xs ${
                       logEntry.type === 'damage'
                         ? 'bg-red-900 bg-opacity-30 text-red-300'
+                        : logEntry.type === 'heal'
+                        ? 'bg-green-900 bg-opacity-30 text-green-300'
                         : logEntry.type === 'er'
                         ? 'bg-cyan-900 bg-opacity-30 text-cyan-300'
                         : logEntry.type === 'cast'
