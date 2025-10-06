@@ -3,7 +3,8 @@ import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 import CombatSandbox from '../CombatSandbox.jsx';
-import { initialCharacter, initialEnemy } from '../constants.js';
+import { initialCharacter, initialEnemy, ABILITIES, WEAPONS } from '../constants.js';
+import { calculateERCost } from '../utils.js';
 
 vi.mock('lucide-react', () => ({
   Swords: () => <span data-icon="swords" />,
@@ -32,6 +33,12 @@ describe('CombatSandbox component', () => {
       elements: { ...initialCharacter.elements }
     };
 
+    const ability = ABILITIES.find((entry) => entry.id === 'verdant_safe_attack');
+    if (!ability) {
+      throw new Error('Expected verdant_safe_attack to exist in ABILITIES');
+    }
+    const cost = calculateERCost(ability, characterState);
+
     render(
       <CombatSandbox
         initialCharacterState={characterState}
@@ -53,7 +60,14 @@ describe('CombatSandbox component', () => {
 
     expect(await screen.findByText('Echo Pierce heals for 133 HP')).toBeInTheDocument();
     expect(await screen.findByText('Echo Pierce hits for 12 damage')).toBeInTheDocument();
-    expect(await screen.findByText('+4 ER')).toBeInTheDocument();
+
+    const expectedErGain = Math.min(
+      characterState.maxER - (characterState.currentER - cost.finalCost),
+      WEAPONS[characterState.weapon].erGainedOnHit
+    );
+    const formattedExpectedErGain = Number(expectedErGain.toFixed(1)).toString();
+
+    expect(await screen.findByText(`+${formattedExpectedErGain} ER`)).toBeInTheDocument();
   });
 
   it('applies the healing component of Regrowth Pulse', async () => {
