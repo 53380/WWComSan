@@ -38,6 +38,26 @@ describe('characterReducer', () => {
     expect(mitigatedState.currentER).toBe(100);
   });
 
+  it('respects character maxER when gaining ER directly', () => {
+    const state = { ...baseCharacterState, currentER: 145, maxER: 150 };
+    const gained = characterReducer(state, { type: 'GAIN_ER', amount: 10 });
+
+    expect(gained.currentER).toBe(150);
+  });
+
+  it('respects character maxER when gaining ER from a dodge', () => {
+    const state = { ...baseCharacterState, currentER: 155, maxER: 160 };
+    const dodged = characterReducer(state, {
+      type: 'TAKE_DAMAGE',
+      amount: 999,
+      didDodge: true,
+      dodgeErGain: 10
+    });
+
+    expect(dodged.hp).toBe(state.hp);
+    expect(dodged.currentER).toBe(160);
+  });
+
   it('caps CC durations and stores computed expiration', () => {
     const ccState = characterReducer(baseCharacterState, {
       type: 'ADD_CC',
