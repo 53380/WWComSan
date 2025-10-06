@@ -92,7 +92,9 @@ export const calculateDamage = (ability, character) => {
     finalMod *= (insMod * 0.5 + strMod * 0.3 + dexMod * 0.2);
   }
 
-  return Math.round((ability.baseDamage || 10) * finalMod * (1 + resonance) * weaponMult);
+  const baseDamage = ability.baseDamage ?? 10;
+
+  return Math.round(baseDamage * finalMod * (1 + resonance) * weaponMult);
 };
 
 export const calculateHealing = (ability, character) => {
@@ -138,62 +140,68 @@ export const resolveCombatPhase = ({
   if (combatState.state === COMBAT_STATES.WIND_UP) {
     const ability = combatState.ability;
 
-    if (ability.variant === 'Support') {
+    const healing = ability.baseHealing ?? 0;
+    if (healing > 0) {
       const heal = calculateHealing(ability, character);
-      dispatchCharacter({ type: 'HEAL', amount: heal });
-      addLog(`${ability.name} heals for ${heal} HP`, 'heal');
-      dispatchCharacter({ type: 'GAIN_ER', amount: 2 });
-      addLog(`+2 ER`, 'er');
-    } else {
+      if (heal > 0) {
+        dispatchCharacter({ type: 'HEAL', amount: heal });
+        addLog(`${ability.name} heals for ${heal} HP`, 'heal');
+      }
+    }
+
+    const dealsDamage = (ability.baseDamage ?? 0) > 0;
+    if (dealsDamage) {
       const dmg = calculateDamage(ability, character);
-      dispatchEnemy({ type: 'TAKE_DAMAGE', amount: dmg });
-      addLog(`${ability.name} hits for ${dmg} damage`, 'damage');
+      if (dmg > 0) {
+        dispatchEnemy({ type: 'TAKE_DAMAGE', amount: dmg });
+        addLog(`${ability.name} hits for ${dmg} damage`, 'damage');
+      }
+    }
 
-      if (ability.variant === 'Attack') {
-        const erGain = WEAPONS[character.weapon].erGainedOnHit || 2;
-        dispatchCharacter({ type: 'GAIN_ER', amount: erGain });
-        addLog(`+${erGain} ER`, 'er');
-      } else if (ability.variant === 'Defense') {
-        dispatchCharacter({ type: 'SET_DEFENSE', defense: ability });
-        const perfectWindow = ability.perfectWindow || 0.3;
-        setPerfectTimingWindow({
-          startTime: frameTimestamp,
-          duration: perfectWindow * 1000,
-          ability
+    if (ability.variant === 'Attack') {
+      const erGain = WEAPONS[character.weapon].erGainedOnHit || 2;
+      dispatchCharacter({ type: 'GAIN_ER', amount: erGain });
+      addLog(`+${erGain} ER`, 'er');
+    } else if (ability.variant === 'Defense') {
+      dispatchCharacter({ type: 'SET_DEFENSE', defense: ability });
+      const perfectWindow = ability.perfectWindow || 0.3;
+      setPerfectTimingWindow({
+        startTime: frameTimestamp,
+        duration: perfectWindow * 1000,
+        ability
+      });
+
+      addLog(`Defense active! ${perfectWindow.toFixed(1)}s perfect window`, 'info');
+
+      if (defenseTimeoutRef?.current) {
+        clearTimeout(defenseTimeoutRef.current);
+      }
+
+      defenseTimeoutRef.current = setTimeout(() => {
+        setPerfectTimingWindow(null);
+        dispatchCharacter({ type: 'CLEAR_DEFENSE' });
+        addLog('Defense ended', 'info');
+        defenseTimeoutRef.current = null;
+      }, ability.duration || 2000);
+    } else if (ability.variant === 'Control') {
+      if (ability.ccDuration && ability.ccType) {
+        const ccEffect = createCcEffect({
+          ccType: ability.ccType,
+          duration: ability.ccDuration,
+          timestamp: frameTimestamp
         });
+        dispatchEnemy({ type: 'ADD_CC', ccEffect });
+        addLog(`Applied ${ability.ccType} (${ccEffect.duration}s, capped at 2.0s)`, 'info');
 
-        addLog(`Defense active! ${perfectWindow.toFixed(1)}s perfect window`, 'info');
+        const lastSuccess = ccSuccessTimestamps[ability.id] || 0;
+        const timeSinceLastSuccess = (frameTimestamp - lastSuccess) / 1000;
 
-        if (defenseTimeoutRef?.current) {
-          clearTimeout(defenseTimeoutRef.current);
-        }
-
-        defenseTimeoutRef.current = setTimeout(() => {
-          setPerfectTimingWindow(null);
-          dispatchCharacter({ type: 'CLEAR_DEFENSE' });
-          addLog('Defense ended', 'info');
-          defenseTimeoutRef.current = null;
-        }, ability.duration || 2000);
-      } else if (ability.variant === 'Control') {
-        if (ability.ccDuration && ability.ccType) {
-          const ccEffect = createCcEffect({
-            ccType: ability.ccType,
-            duration: ability.ccDuration,
-            timestamp: frameTimestamp
-          });
-          dispatchEnemy({ type: 'ADD_CC', ccEffect });
-          addLog(`Applied ${ability.ccType} (${ccEffect.duration}s, capped at 2.0s)`, 'info');
-
-          const lastSuccess = ccSuccessTimestamps[ability.id] || 0;
-          const timeSinceLastSuccess = (frameTimestamp - lastSuccess) / 1000;
-
-          if (timeSinceLastSuccess >= 2.0) {
-            dispatchCharacter({ type: 'GAIN_ER', amount: 1 });
-            addLog('CC success! +1 ER (2s gate passed)', 'er');
-            setCcSuccessTimestamps((prev) => ({ ...prev, [ability.id]: frameTimestamp }));
-          } else {
-            addLog(`CC applied (ER gain on cooldown: ${(2.0 - timeSinceLastSuccess).toFixed(1)}s)`, 'info');
-          }
+        if (timeSinceLastSuccess >= 2.0) {
+          dispatchCharacter({ type: 'GAIN_ER', amount: 1 });
+          addLog('CC success! +1 ER (2s gate passed)', 'er');
+          setCcSuccessTimestamps((prev) => ({ ...prev, [ability.id]: frameTimestamp }));
+        } else {
+          addLog(`CC applied (ER gain on cooldown: ${(2.0 - timeSinceLastSuccess).toFixed(1)}s)`, 'info');
         }
       }
     }

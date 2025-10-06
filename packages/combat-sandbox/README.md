@@ -3,6 +3,8 @@
 A drop-in React component that re-creates the **Worlds Within** combat sandbox. It exposes the fully interactive toy combat arena plus
 utilities and data definitions so that systems can experiment with the ability catalogue, elemental resonances, and combat pacing.
 
+Verdant-themed abilities now weave healing directly into existing Attack and Special lanes, letting you test sustain-oriented builds without introducing a separate Support track.
+
 ## Installation
 
 ```bash

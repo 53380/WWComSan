@@ -15,6 +15,7 @@ import {
   calculateAnimationTiming,
   calculateDamage,
   calculateERCost,
+  calculateHealing,
   calculateResonance,
   getResonanceTier,
   resolveCombatPhase,
@@ -133,23 +134,35 @@ export function CombatSandbox({
       dispatchEnemy({ type: 'SPEND_ER', amount: cost.finalCost });
       addLog(`Enemy: ${ability.name}`, 'info');
 
-      const dmg = calculateDamage(ability, enemy);
-      const dodgeTimestamp = getTimestamp();
-      const didDodge = rollDodge(character.attributes.AGI);
-      const dodgeErGain = 4;
-      const erOnHit = 1;
-      dispatchCharacter({
-        type: 'TAKE_DAMAGE',
-        amount: dmg,
-        didDodge,
-        dodgeTimestamp: didDodge ? dodgeTimestamp : undefined,
-        dodgeErGain,
-        erOnHit
-      });
-      if (didDodge) {
-        addLog(`Enemy attack dodged! +${dodgeErGain} ER`, 'er');
-      } else {
-        addLog(`Enemy hits for ${dmg} damage`, 'damage');
+      const healing = ability.baseHealing ?? 0;
+      if (healing > 0) {
+        const heal = calculateHealing(ability, enemy);
+        if (heal > 0) {
+          dispatchEnemy({ type: 'HEAL', amount: heal });
+          addLog(`Enemy heals for ${heal} HP`, 'heal');
+        }
+      }
+
+      const dealsDamage = (ability.baseDamage ?? 0) > 0;
+      if (dealsDamage) {
+        const dmg = calculateDamage(ability, enemy);
+        const dodgeTimestamp = getTimestamp();
+        const didDodge = rollDodge(character.attributes.AGI);
+        const dodgeErGain = 4;
+        const erOnHit = 1;
+        dispatchCharacter({
+          type: 'TAKE_DAMAGE',
+          amount: dmg,
+          didDodge,
+          dodgeTimestamp: didDodge ? dodgeTimestamp : undefined,
+          dodgeErGain,
+          erOnHit
+        });
+        if (didDodge) {
+          addLog(`Enemy attack dodged! +${dodgeErGain} ER`, 'er');
+        } else {
+          addLog(`Enemy hits for ${dmg} damage`, 'damage');
+        }
       }
 
       if (ability.variant === 'Attack') {
