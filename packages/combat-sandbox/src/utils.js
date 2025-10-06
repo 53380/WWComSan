@@ -54,6 +54,11 @@ export const calculateAnimationTiming = (weapon, agiValue) => {
   };
 };
 
+const roundToDecimals = (value, decimals) => {
+  const factor = 10 ** decimals;
+  return Math.round((value + Number.EPSILON) * factor) / factor;
+};
+
 export const calculateERCost = (ability, character) => {
   const attrValue = character.attributes[ability.governingAttr] || 0;
   const elemValue = character.elements[ability.governingElem] || 0;
@@ -67,11 +72,11 @@ export const calculateERCost = (ability, character) => {
   const attrDiscount = getAttributeTierDiscount(attrValue);
   const resonanceDiscount = getResonanceDiscount(resonance);
   const finalCost = grossCost * (1 - attrDiscount) * (1 - resonanceDiscount);
-  const finalCostRounded = Math.round(finalCost * 100) / 100;
+  const finalCostRounded = roundToDecimals(roundToDecimals(finalCost, 2), 1);
 
   return {
     grossCost,
-    finalCost: Number(finalCostRounded.toFixed(1)),
+    finalCost: finalCostRounded,
     resonance,
     resonanceTier: getResonanceTier(resonance)
   };
