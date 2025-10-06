@@ -250,7 +250,17 @@ export function CombatSandbox({
 
   const isAbilityRecommended = (ability) => {
     const topResonances = getTopResonances().slice(0, 2);
-    return topResonances.some((r) => r.elem === ability.governingElem);
+    const matchesTopElement = topResonances.some((r) => r.elem === ability.governingElem);
+
+    if (!matchesTopElement) return false;
+
+    // If it requires resonance, verify you've actually hit that threshold
+    if (ability.requiresResonance) {
+      const cost = calculateERCost(ability, character);
+      return cost.resonance >= ability.requiresResonance;
+    }
+
+    return true;
   };
 
   const renderResonanceDetails = () => (
