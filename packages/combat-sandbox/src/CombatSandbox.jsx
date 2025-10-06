@@ -6,6 +6,10 @@ import {
   ATTRIBUTE_DESCRIPTIONS,
   COMBAT_STATES,
   ELEMENTS,
+  LANE_STYLES,
+  LANE_RULES,
+  WEAPONS,
+  WEAPON_TAGS,
   ELEMENT_DESCRIPTIONS,
   LANE_STYLES,
   WEAPONS,
@@ -15,10 +19,13 @@ import {
 import { characterReducer, enemyReducer } from './reducers.js';
 import {
   calculateAnimationTiming,
+  calculateAnimationTimingWithCrossover,
   calculateDamage,
   calculateERCost,
   calculateHealing,
   calculateResonance,
+  computeCompatibility,
+  getCrossoverTier,
   getResonanceTier,
   resolveCombatPhase,
   getTimestamp,
@@ -127,7 +134,20 @@ export function CombatSandbox({
     if (!enemy.aiEnabled || combatState.state !== COMBAT_STATES.IDLE || character.hp <= 0 || enemy.hp <= 0) return;
 
     const timer = setTimeout(() => {
-      const affordable = ABILITIES.filter((a) => calculateERCost(a, enemy).finalCost <= enemy.currentER);
+      const affordable = ABILITIES.filter((a) => {
+        const rules = LANE_RULES[a.variant] || { softMin: 0.3 };
+        const compatScore = computeCompatibility(enemy.weapon, a);
+        if (compatScore < (rules.softMin ?? 0)) {
+          return false;
+        }
+
+        const costCheck = calculateERCost(a, enemy);
+        if (costCheck.crossover?.tier === 'Blocked') {
+          return false;
+        }
+
+        return costCheck.finalCost <= enemy.currentER;
+      });
       if (affordable.length === 0) return;
 
       const ability = affordable[Math.floor(Math.random() * affordable.length)];
@@ -198,7 +218,11 @@ export function CombatSandbox({
     if (combatState.state !== COMBAT_STATES.IDLE) return;
 
     const cost = calculateERCost(ability, character);
-    if (character.currentER < cost.finalCost) {
+    if (cost.crossover?.tier === 'Blocked') {
+      addLog(`${ability.name} is incompatible with ${character.weapon}`, 'error');
+      return;
+    }
+    if (!Number.isFinite(cost.finalCost) || character.currentER < cost.finalCost) {
       addLog(`Not enough ER for ${ability.name}`, 'error');
       return;
     }
@@ -305,6 +329,8 @@ export function CombatSandbox({
   const getRelevantAbilities = (variant) => {
     const topResonances = getTopResonances();
     const highestTier = getHighestResonanceTier();
+    const rules = LANE_RULES[variant] || { softMin: 0 };
+    const weaponTags = WEAPON_TAGS[character.weapon] || [];
 
     const relevant = ABILITIES.filter((a) => {
       if (a.variant !== variant) return false;
@@ -318,10 +344,23 @@ export function CombatSandbox({
       const elemValue = character.elements[a.governingElem] || 0;
       if (elemValue < 25) return false;
 
+      const compatScore = computeCompatibility(character.weapon, a);
+      const hasUniversal = (rules.universalTags || []).some(
+        (tag) => weaponTags.includes(tag) || (a.kit?.requiredTags || []).includes(tag)
+      );
+
+      if (compatScore < (rules.softMin ?? 0) && !hasUniversal) {
+        return false;
+      }
+
       return true;
     });
 
     return relevant.sort((a, b) => {
+      const compatDiff = computeCompatibility(character.weapon, b) - computeCompatibility(character.weapon, a);
+      if (Math.abs(compatDiff) > 0.001) {
+        return compatDiff;
+      }
       const aElemIndex = topResonances.findIndex((r) => r.elem === a.governingElem);
       const bElemIndex = topResonances.findIndex((r) => r.elem === b.governingElem);
       return aElemIndex - bElemIndex;
@@ -333,6 +372,12 @@ export function CombatSandbox({
     const matchesTopElement = topResonances.some((r) => r.elem === ability.governingElem);
 
     if (!matchesTopElement) return false;
+
+    const rules = LANE_RULES[ability.variant] || { minCompat: 0 };
+    const compatScore = computeCompatibility(character.weapon, ability);
+    if (compatScore < (rules.minCompat ?? 0)) {
+      return false;
+    }
 
     // If it requires resonance, verify you've actually hit that threshold
     if (ability.requiresResonance) {
@@ -652,10 +697,12 @@ export function CombatSandbox({
                     >
                       {relevantAbilities.map((a) => {
                         const recommended = isAbilityRecommended(a);
+                        const compatScore = computeCompatibility(character.weapon, a);
+                        const compatTier = getCrossoverTier(compatScore);
                         return (
                           <option key={a.id} value={a.id}>
                             {recommended ? '⭐ ' : ''}
-                            {a.name}
+                            {a.name} ({compatTier})
                           </option>
                         );
                       })}
@@ -677,16 +724,51 @@ export function CombatSandbox({
               ].map(({ ability, lane }) => {
                 if (!ability) return null;
                 const cost = calculateERCost(ability, character);
-                const canAfford = character.currentER >= cost.finalCost;
+                const compatScore = cost.crossover?.score ?? computeCompatibility(character.weapon, ability);
+                const compatTier = cost.crossover?.tier ?? getCrossoverTier(compatScore);
+                const penalty = cost.crossover?.penalty;
+                const canAfford = Number.isFinite(cost.finalCost) && character.currentER >= cost.finalCost;
                 const meetsResonance = !ability.requiresResonance || cost.resonance >= ability.requiresResonance;
-                const canCast = canAfford && meetsResonance && combatState.state === COMBAT_STATES.IDLE;
+                const isBlocked = compatTier === 'Blocked';
+                const canCast = !isBlocked && canAfford && meetsResonance && combatState.state === COMBAT_STATES.IDLE;
                 const styles = LANE_STYLES[ability.variant];
                 const prospectiveDamage = ability.baseDamage ? calculateDamage(ability, character) : 0;
                 const prospectiveHealing = ability.baseHealing ? calculateHealing(ability, character) : 0;
-                const timing = calculateAnimationTiming(character.weapon, character.attributes.AGI);
-                const cancelRefund = cost.finalCost * 0.4;
+                const timing = calculateAnimationTimingWithCrossover(ability, character);
+                const cancelRefund = Number.isFinite(cost.finalCost) ? cost.finalCost * 0.4 : 0;
                 const weaponData = WEAPONS[character.weapon] || {};
                 const erOnHit = weaponData.erGainedOnHit ?? 0;
+                const erPenaltyPct = penalty ? Math.round((penalty.er - 1) * 100) : 0;
+                const dmgPenaltyPct = penalty ? Math.round((penalty.dmg - 1) * 100) : 0;
+                const windPenaltyPct = penalty ? Math.round((penalty.windUp - 1) * 100) : 0;
+                const formatPercent = (value) => (value > 0 ? `+${value}` : `${value}`);
+                const compatBadgeClass =
+                  compatTier === 'Native'
+                    ? 'bg-green-600'
+                    : compatTier === 'Soft'
+                    ? 'bg-yellow-600'
+                    : compatTier === 'Hard'
+                    ? 'bg-orange-600'
+                    : 'bg-red-700';
+                let compatibilityTooltip = '';
+                if (compatTier === 'Blocked') {
+                  compatibilityTooltip = 'Blocked by weapon compatibility';
+                } else {
+                  compatibilityTooltip = `Compatibility ${compatScore.toFixed(2)} (${compatTier})`;
+                  if (penalty && compatTier !== 'Native') {
+                    compatibilityTooltip += ` • ${formatPercent(erPenaltyPct)}% ER, ${formatPercent(dmgPenaltyPct)}% dmg, ${formatPercent(windPenaltyPct)}% wind-up`;
+                  }
+                }
+                const tooltipParts = [];
+                if (compatibilityTooltip) tooltipParts.push(compatibilityTooltip);
+                if (!meetsResonance) {
+                  tooltipParts.push(
+                    `Requires ${ability.governingAttr}×${ability.governingElem} ≥ ${ability.requiresResonance}. You have: ${cost.resonance.toFixed(3)}`
+                  );
+                } else if (!canAfford && Number.isFinite(cost.finalCost)) {
+                  tooltipParts.push(`Need ${(cost.finalCost - character.currentER).toFixed(1)} more ER`);
+                }
+                const tooltip = tooltipParts.join(' • ');
 
                 return (
                   <button
@@ -697,19 +779,19 @@ export function CombatSandbox({
                     className={`p-4 rounded border-2 transition-all relative ${
                       canCast ? `${styles.active} ${styles.hover}` : 'bg-gray-800 border-gray-700 opacity-40 cursor-not-allowed'
                     }`}
-                    title={
-                      !meetsResonance
-                        ? `Requires ${ability.governingAttr}×${ability.governingElem} ≥ ${ability.requiresResonance}. You have: ${cost.resonance.toFixed(3)}`
-                        : !canAfford
-                        ? `Need ${(cost.finalCost - character.currentER).toFixed(1)} more ER`
-                        : ''
-                    }
+                    title={tooltip}
                   >
+                    <div
+                      className={`absolute top-1 left-1 px-1.5 py-0.5 rounded text-[10px] font-bold ${compatBadgeClass}`}
+                      title={`Compatibility ${compatScore.toFixed(2)} (${compatTier})`}
+                    >
+                      {compatTier}
+                    </div>
                     <div className="text-xs font-bold mb-1 text-gray-400">{lane}</div>
                     <div className="text-sm font-bold mb-1">{ability.name}</div>
                     {isAbilityRecommended(ability) && <div className="text-xs text-yellow-400 mb-1">⭐ Recommended</div>}
                     <div className={`text-2xl font-bold ${canAfford ? 'text-cyan-400' : 'text-red-400'}`}>
-                      {cost.finalCost.toFixed(1)}
+                      {Number.isFinite(cost.finalCost) ? cost.finalCost.toFixed(1) : '—'}
                     </div>
                     <div className="text-xs text-gray-400">ER</div>
                     <div className="mt-1 text-[0.7rem] text-gray-300 flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
@@ -723,7 +805,7 @@ export function CombatSandbox({
                     </div>
                     <div className="mt-2 text-[0.65rem] text-gray-400 flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
                       <span title="Energy refunded if you cancel during wind-up">
-                        Cancel refund ≈{cancelRefund.toFixed(1)} ER
+                        Cancel refund {Number.isFinite(cost.finalCost) ? `≈${cancelRefund.toFixed(1)} ER` : '—'}
                       </span>
                       {ability.variant === 'Attack' && erOnHit > 0 && (
                         <span title="Energy returned on a successful hit with this weapon">
@@ -731,6 +813,14 @@ export function CombatSandbox({
                         </span>
                       )}
                     </div>
+                    {penalty && compatTier !== 'Native' && compatTier !== 'Blocked' && (
+                      <div className="mt-1 text-[0.65rem] text-gray-400">
+                        {formatPercent(erPenaltyPct)}% ER · {formatPercent(dmgPenaltyPct)}% dmg · {formatPercent(windPenaltyPct)}% wind-up
+                      </div>
+                    )}
+                    {compatTier === 'Blocked' && (
+                      <div className="mt-1 text-[0.65rem] text-red-400">Blocked: incompatible with current weapon</div>
+                    )}
                     <div className="text-xs mt-1 text-gray-300">{ability.description}</div>
                     {ability.requiresResonance && (
                       <div

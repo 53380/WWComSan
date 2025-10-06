@@ -1,4 +1,10 @@
-import { WEAPONS, COMBAT_STATES } from './constants.js';
+import {
+  WEAPONS,
+  COMBAT_STATES,
+  WEAPON_FAMILIES,
+  WEAPON_TAGS,
+  CROSSOVER_PENALTIES
+} from './constants.js';
 
 export const getTimestamp = () => Date.now();
 
@@ -19,6 +25,81 @@ export const createCcEffect = ({ ccType, duration, timestamp = getTimestamp() })
 };
 
 export const calculateResonance = (attrValue, elemValue) => (attrValue / 100) * (elemValue / 100);
+
+export const getWeaponFamily = (weapon) => WEAPON_FAMILIES[weapon] || 'Misc';
+
+export const computeCompatibility = (weapon, ability) => {
+  const weaponTags = WEAPON_TAGS[weapon] || [];
+  const kit = ability?.kit || {};
+  const required = kit.requiredTags || [];
+  const abilityTags = kit.tags || [];
+  const preferredFamilies = kit.preferredFamilies || [];
+
+  if (!required.length && !abilityTags.length && !preferredFamilies.length) {
+    return 1;
+  }
+
+  if (required.length && required.every((tag) => !weaponTags.includes(tag))) {
+    return 0;
+  }
+
+  const requiredOverlap = required.length
+    ? required.filter((tag) => weaponTags.includes(tag)).length / required.length
+    : 1;
+
+  const tagOverlap = abilityTags.length
+    ? abilityTags.filter((tag) => weaponTags.includes(tag)).length / abilityTags.length
+    : 1;
+
+  const familyBonus = preferredFamilies.includes(getWeaponFamily(weapon)) ? 0.3 : 0;
+  const score = Math.min(1, 0.5 * requiredOverlap + 0.2 * tagOverlap + familyBonus);
+  return Number(score.toFixed(3));
+};
+
+export const getCrossoverTier = (score) => {
+  if (score >= 0.7) return 'Native';
+  if (score >= 0.5) return 'Soft';
+  if (score >= 0.3) return 'Hard';
+  return 'Blocked';
+};
+
+export const applyCrossoverModifiers = ({ ability, actor, baseCost = 0, baseDamage = 0, baseTiming }) => {
+  const score = computeCompatibility(actor.weapon, ability);
+  const penalty = CROSSOVER_PENALTIES.find((entry) => score >= entry.min);
+
+  if (!penalty) {
+    return {
+      score,
+      tier: 'Blocked',
+      finalCost: Infinity,
+      finalDamage: 0,
+      finalTiming: baseTiming ? { ...baseTiming } : baseTiming,
+      penalty: null
+    };
+  }
+
+  const multipliers = {
+    er: 1 + penalty.er,
+    dmg: 1 + penalty.dmg,
+    windUp: 1 + penalty.windUp
+  };
+
+  const finalTiming = baseTiming
+    ? {
+        ...baseTiming,
+        windUp: (baseTiming.windUp ?? 0) * multipliers.windUp
+      }
+    : baseTiming;
+
+  return {
+    score,
+    tier: penalty.label,
+    finalCost: baseCost * multipliers.er,
+    finalDamage: baseDamage * multipliers.dmg,
+    finalTiming,
+    penalty: multipliers
+  };
+};
 
 export const getAttributeTierDiscount = (value) => {
   if (value >= 90) return 0.15;
@@ -54,6 +135,17 @@ export const calculateAnimationTiming = (weapon, agiValue) => {
   };
 };
 
+export const calculateAnimationTimingWithCrossover = (ability, actor) => {
+  const baseTiming = calculateAnimationTiming(actor.weapon, actor.attributes.AGI || 0);
+  const modified = applyCrossoverModifiers({
+    ability,
+    actor,
+    baseTiming: baseTiming
+  });
+
+  return modified.finalTiming || baseTiming;
+};
+
 const roundToDecimals = (value, decimals) => {
   const factor = 10 ** decimals;
   return Math.round((value + Number.EPSILON) * factor) / factor;
@@ -72,13 +164,30 @@ export const calculateERCost = (ability, character) => {
   const attrDiscount = getAttributeTierDiscount(attrValue);
   const resonanceDiscount = getResonanceDiscount(resonance);
   const finalCost = grossCost * (1 - attrDiscount) * (1 - resonanceDiscount);
-  const finalCostRounded = roundToDecimals(roundToDecimals(finalCost, 2), 1);
+  const baseFinalCost = roundToDecimals(roundToDecimals(finalCost, 2), 1);
+
+  const crossover = applyCrossoverModifiers({
+    ability,
+    actor: character,
+    baseCost: baseFinalCost,
+    baseTiming: { windUp: 1 }
+  });
+
+  const adjustedFinalCost = Number.isFinite(crossover.finalCost)
+    ? roundToDecimals(roundToDecimals(crossover.finalCost, 2), 1)
+    : Infinity;
 
   return {
     grossCost,
-    finalCost: finalCostRounded,
+    baseFinalCost,
+    finalCost: adjustedFinalCost,
     resonance,
-    resonanceTier: getResonanceTier(resonance)
+    resonanceTier: getResonanceTier(resonance),
+    crossover: {
+      score: crossover.score,
+      tier: crossover.tier,
+      penalty: crossover.penalty
+    }
   };
 };
 
@@ -102,8 +211,20 @@ export const calculateDamage = (ability, character) => {
   }
 
   const baseDamage = ability.baseDamage ?? 10;
+  const rawDamage = Math.round(baseDamage * finalMod * (1 + resonance) * weaponMult);
 
-  return Math.round(baseDamage * finalMod * (1 + resonance) * weaponMult);
+  const crossover = applyCrossoverModifiers({
+    ability,
+    actor: character,
+    baseDamage: rawDamage,
+    baseTiming: { windUp: 1 }
+  });
+
+  if (crossover.tier === 'Blocked') {
+    return 0;
+  }
+
+  return Math.max(0, Math.round(crossover.finalDamage));
 };
 
 export const calculateHealing = (ability, character) => {
@@ -134,7 +255,10 @@ export const resolveCombatPhase = ({
     return;
   }
 
-  const timing = calculateAnimationTiming(character.weapon, character.attributes.AGI);
+  const activeAbility = combatState.ability;
+  const timing = activeAbility
+    ? calculateAnimationTimingWithCrossover(activeAbility, character)
+    : calculateAnimationTiming(character.weapon, character.attributes.AGI);
   const phaseDuration = combatState.state === COMBAT_STATES.WIND_UP ? timing.windUp : timing.recovery;
   const frameTimestamp = getTimestamp();
   const elapsed = (frameTimestamp - combatState.startTime) / 1000;
@@ -147,7 +271,7 @@ export const resolveCombatPhase = ({
   }
 
   if (combatState.state === COMBAT_STATES.WIND_UP) {
-    const ability = combatState.ability;
+    const ability = activeAbility;
 
     const healing = ability.baseHealing ?? 0;
     if (healing > 0) {
