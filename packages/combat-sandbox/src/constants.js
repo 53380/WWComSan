@@ -32,38 +32,886 @@ export const WEAPONS = {
   'Misc. Ranged': { mass: 1, damageMultiplier: 0.9, windUpBase: 0.32, recoveryBase: 0.46, erGainedOnHit: 2 }
 };
 
+export const WEAPON_FAMILIES = {
+  'Long Swords': 'Blade',
+  'Curved Long Blades': 'Blade',
+  'Short Swords': 'Blade',
+  'Great Swords': 'Blade',
+  'Knives & Daggers': 'Blade',
+  'Fist Weapons': 'Blunt',
+  'One-Hand Axes': 'Blunt',
+  'Two-Hand Axes': 'Blunt',
+  'Spears (Thrusting)': 'Pierce',
+  'Polearms (Sweeping)': 'Pierce',
+  'Blunt Weapons': 'Blunt',
+  'Flails & Chain Maces': 'Blunt',
+  'Whips & Urumi': 'Pierce',
+  Staffs: 'Arcane',
+  Shields: 'Blunt',
+  Longbows: 'Ranged',
+  'Short Bows': 'Ranged',
+  Crossbows: 'Ranged',
+  Pistols: 'Ranged',
+  Shotguns: 'Ranged',
+  'Long Guns': 'Ranged',
+  'Thrown Weapons': 'Ranged',
+  'Misc. Ranged': 'Ranged'
+};
+
+export const WEAPON_TAGS = {
+  'Long Swords': ['Close', 'Balanced', 'Parry', 'Guard', 'Control'],
+  'Curved Long Blades': ['Close', 'Finesse', 'Parry', 'Cleave'],
+  'Short Swords': ['Close', 'Finesse', 'Guard', 'Parry'],
+  'Great Swords': ['Close', 'Heavy', 'Cleave', 'Stun'],
+  'Knives & Daggers': ['Close', 'Finesse', 'Bleed', 'Dodge'],
+  'Fist Weapons': ['Close', 'Mobility', 'Finesse', 'Dodge'],
+  'One-Hand Axes': ['Close', 'Heavy', 'Cleave', 'Stun'],
+  'Two-Hand Axes': ['Close', 'Heavy', 'Cleave', 'Knockback'],
+  'Spears (Thrusting)': ['Reach', 'Pierce', 'Control', 'Guard'],
+  'Polearms (Sweeping)': ['Reach', 'Cleave', 'Control', 'Pierce'],
+  'Blunt Weapons': ['Close', 'Heavy', 'Stun', 'Knockback'],
+  'Flails & Chain Maces': ['Close', 'Heavy', 'Stun', 'Control'],
+  'Whips & Urumi': ['Reach', 'Finesse', 'Control', 'Mobility'],
+  Staffs: ['Reach', 'Guard', 'Channel', 'Control'],
+  Shields: ['Close', 'Guard', 'Stun', 'Control'],
+  Longbows: ['Ranged', 'Pierce', 'AoE', 'Channel'],
+  'Short Bows': ['Ranged', 'Finesse', 'Mobility', 'Pierce'],
+  Crossbows: ['Ranged', 'Pierce', 'Precision', 'Guard'],
+  Pistols: ['Ranged', 'Finesse', 'Close', 'Mobility'],
+  Shotguns: ['Ranged', 'Close', 'AoE', 'Knockback'],
+  'Long Guns': ['Ranged', 'Heavy', 'Pierce', 'Precision'],
+  'Thrown Weapons': ['Ranged', 'Mobility', 'Control', 'Pierce'],
+  'Misc. Ranged': ['Ranged', 'Trick', 'Control', 'Channel']
+};
+
+export const LANE_RULES = {
+  Attack: { minCompat: 0.5, softMin: 0.4, offKitSlots: 1, universalTags: [] },
+  Defense: { minCompat: 0.4, softMin: 0.3, offKitSlots: 2, universalTags: ['Parry', 'Guard', 'Dodge'] },
+  Control: { minCompat: 0.35, softMin: 0.25, offKitSlots: 2, universalTags: [] },
+  Special: { minCompat: 0.45, softMin: 0.35, offKitSlots: 1, universalTags: [] }
+};
+
+export const CROSSOVER_PENALTIES = [
+  { min: 0.7, er: 0, dmg: 0, windUp: 0, label: 'Native' },
+  { min: 0.5, er: 0.15, dmg: -0.1, windUp: 0.1, label: 'Soft' },
+  { min: 0.3, er: 0.35, dmg: -0.2, windUp: 0.2, label: 'Hard' }
+];
+
 export const COMBAT_STATES = { IDLE: 'idle', WIND_UP: 'windUp', RECOVERY: 'recovery' };
 
 export const ABILITIES = [
-  { id: 'fire_attack', name: 'Embernick', family: 'Fire', variant: 'Attack', baseBand: 5, baseDamage: 10, governingAttr: 'STR', governingElem: 'Fire', scalars: { scope: 1.0, potency: 1.1, uptime: 1.0, reliability: 1.0, mobility: 1.0, ccCap: 1.0, reaction: 1.0, cooldown: 1.0, risk: 1.0 }, description: 'Fire strike' },
-  { id: 'fire_defense', name: 'Ember Mantle', family: 'Fire', variant: 'Defense', baseBand: 5, baseDamage: 5, mitigationMultiplier: 0.50, governingAttr: 'TOU', governingElem: 'Fire', scalars: { scope: 1.0, potency: 1.0, uptime: 1.0, reliability: 1.0, mobility: 1.0, ccCap: 1.0, reaction: 1.0, cooldown: 1.0, risk: 0.90 }, description: '50% mitigation', duration: 2000 },
-  { id: 'fire_control', name: 'Ember Haze', family: 'Fire', variant: 'Control', baseBand: 12, baseDamage: 6, governingAttr: 'DEX', governingElem: 'Fire', scalars: { scope: 1.0, potency: 1.0, uptime: 1.0, reliability: 0.98, mobility: 1.0, ccCap: 1.0, reaction: 1.0, cooldown: 1.0, risk: 1.0 }, description: '1.25s Slow', ccDuration: 1.25, ccType: 'Slow' },
-  { id: 'fire_special', name: 'Blazereap', family: 'Fire', variant: 'Special', baseBand: 28, baseDamage: 40, governingAttr: 'STR', governingElem: 'Fire', scalars: { scope: 1.25, potency: 1.35, uptime: 1.0, reliability: 1.0, mobility: 1.0, ccCap: 1.0, reaction: 1.15, cooldown: 1.0, risk: 1.0 }, description: 'Cone (R≥0.5)', requiresResonance: 0.5 },
-  { id: 'fire_safe_attack', name: 'Flicker', family: 'Fire', variant: 'Attack', baseBand: 3, baseDamage: 7, governingAttr: 'DEX', governingElem: 'Fire', scalars: { scope: 1.0, potency: 0.85, uptime: 1.0, reliability: 1.0, mobility: 1.10, ccCap: 1.0, reaction: 1.0, cooldown: 1.0, risk: 0.85 }, description: 'Safe jab' },
-  { id: 'fire_heavy_defense', name: 'Ember-Plate', family: 'Fire', variant: 'Defense', baseBand: 7, baseDamage: 8, mitigationMultiplier: 0.35, governingAttr: 'TOU', governingElem: 'Fire', scalars: { scope: 1.0, potency: 1.10, uptime: 1.30, reliability: 1.0, mobility: 0.85, ccCap: 1.0, reaction: 1.0, cooldown: 1.0, risk: 0.80 }, description: '65% mitigation', duration: 3000 },
-  { id: 'fire_agg_attack', name: 'Emberstorm', family: 'Fire', variant: 'Attack', baseBand: 8, baseDamage: 18, governingAttr: 'STR', governingElem: 'Fire', scalars: { scope: 1.15, potency: 1.30, uptime: 1.0, reliability: 1.0, mobility: 0.90, ccCap: 1.0, reaction: 1.10, cooldown: 1.0, risk: 1.10 }, description: 'Aggressive AoE' },
-  { id: 'water_attack', name: 'Rippletap', family: 'Water', variant: 'Attack', baseBand: 5, baseDamage: 9, governingAttr: 'SPR', governingElem: 'Water', scalars: { scope: 1.0, potency: 1.05, uptime: 1.15, reliability: 1.0, mobility: 1.0, ccCap: 1.0, reaction: 1.10, cooldown: 1.0, risk: 1.0 }, description: 'Water strike' },
-  { id: 'water_defense', name: 'Steamscreen', family: 'Water', variant: 'Defense', baseBand: 6, baseDamage: 4, mitigationMultiplier: 0.60, governingAttr: 'TOU', governingElem: 'Water', scalars: { scope: 1.0, potency: 0.95, uptime: 1.20, reliability: 1.0, mobility: 1.0, ccCap: 1.0, reaction: 1.15, cooldown: 1.0, risk: 0.92 }, description: '60% mitigation', duration: 2000 },
-  { id: 'water_control', name: 'Drift Hold', family: 'Water', variant: 'Control', baseBand: 13, baseDamage: 5, governingAttr: 'SPR', governingElem: 'Water', scalars: { scope: 1.05, potency: 0.95, uptime: 1.10, reliability: 1.0, mobility: 1.0, ccCap: 1.05, reaction: 1.20, cooldown: 1.0, risk: 1.0 }, description: '1.5s Slow', ccDuration: 1.5, ccType: 'Slow' },
-  { id: 'water_safe_attack', name: 'Measure', family: 'Water', variant: 'Attack', baseBand: 3, baseDamage: 6, governingAttr: 'SPR', governingElem: 'Water', scalars: { scope: 1.0, potency: 0.80, uptime: 1.20, reliability: 1.0, mobility: 1.05, ccCap: 1.0, reaction: 1.05, cooldown: 1.0, risk: 0.85 }, description: 'Sustained poke' },
-  { id: 'water_heavy_defense', name: 'Sunken Aegis', family: 'Water', variant: 'Defense', baseBand: 7, baseDamage: 6, mitigationMultiplier: 0.30, governingAttr: 'TOU', governingElem: 'Water', scalars: { scope: 1.0, potency: 0.85, uptime: 1.40, reliability: 1.0, mobility: 0.80, ccCap: 1.0, reaction: 1.20, cooldown: 1.0, risk: 0.75 }, description: '70% mitigation', duration: 3500 },
-  { id: 'stone_attack', name: 'Ironkiss', family: 'Stone', variant: 'Attack', baseBand: 6, baseDamage: 12, governingAttr: 'STR', governingElem: 'Stone', scalars: { scope: 1.0, potency: 1.20, uptime: 1.0, reliability: 1.0, mobility: 0.95, ccCap: 1.0, reaction: 1.0, cooldown: 1.0, risk: 1.05 }, description: 'Heavy strike' },
-  { id: 'stone_defense', name: 'Ironbark Hold', family: 'Stone', variant: 'Defense', baseBand: 4, baseDamage: 3, mitigationMultiplier: 0.40, governingAttr: 'TOU', governingElem: 'Stone', scalars: { scope: 1.0, potency: 0.90, uptime: 1.25, reliability: 1.0, mobility: 0.90, ccCap: 1.0, reaction: 1.0, cooldown: 1.0, risk: 0.85 }, description: '60% mitigation', duration: 2500 },
-  { id: 'stone_control', name: 'Ground-Lock', family: 'Stone', variant: 'Control', baseBand: 14, baseDamage: 7, governingAttr: 'TOU', governingElem: 'Stone', scalars: { scope: 1.0, potency: 1.05, uptime: 1.0, reliability: 1.0, mobility: 0.95, ccCap: 1.10, reaction: 1.0, cooldown: 1.0, risk: 1.0 }, description: '1.75s Root', ccDuration: 1.75, ccType: 'Root' },
-  { id: 'stone_safe_attack', name: 'Halfguard', family: 'Stone', variant: 'Attack', baseBand: 4, baseDamage: 9, governingAttr: 'STR', governingElem: 'Stone', scalars: { scope: 1.0, potency: 0.95, uptime: 1.0, reliability: 1.0, mobility: 0.90, ccCap: 1.0, reaction: 1.0, cooldown: 1.0, risk: 0.80 }, description: 'Defensive strike' },
-  { id: 'stone_agg_attack', name: 'Quakeblade', family: 'Stone', variant: 'Attack', baseBand: 9, baseDamage: 22, governingAttr: 'STR', governingElem: 'Stone', scalars: { scope: 1.10, potency: 1.40, uptime: 1.0, reliability: 1.0, mobility: 0.80, ccCap: 1.0, reaction: 1.0, cooldown: 1.0, risk: 1.15 }, description: 'Heavy slam' },
-  { id: 'stone_heavy_defense', name: 'Granite-Lock', family: 'Stone', variant: 'Defense', baseBand: 6, baseDamage: 5, mitigationMultiplier: 0.25, governingAttr: 'TOU', governingElem: 'Stone', scalars: { scope: 1.0, potency: 0.80, uptime: 1.50, reliability: 1.0, mobility: 0.70, ccCap: 1.0, reaction: 1.0, cooldown: 1.0, risk: 0.70 }, description: '75% mitigation', duration: 4000 },
-  { id: 'air_attack', name: 'Galespike', family: 'Air', variant: 'Attack', baseBand: 4, baseDamage: 8, governingAttr: 'AGI', governingElem: 'Air', scalars: { scope: 1.0, potency: 1.0, uptime: 1.0, reliability: 0.98, mobility: 1.15, ccCap: 1.0, reaction: 1.05, cooldown: 1.0, risk: 0.95 }, description: 'Swift strike' },
-  { id: 'air_defense', name: 'Gale Brace', family: 'Air', variant: 'Defense', baseBand: 5, baseDamage: 4, mitigationMultiplier: 0.65, governingAttr: 'AGI', governingElem: 'Air', scalars: { scope: 1.0, potency: 0.95, uptime: 1.0, reliability: 1.0, mobility: 1.20, ccCap: 1.0, reaction: 1.10, cooldown: 1.0, risk: 0.88 }, description: '65% mitigation', duration: 1800 },
-  { id: 'air_control', name: 'Gale Gust', family: 'Air', variant: 'Control', baseBand: 11, baseDamage: 5, governingAttr: 'AGI', governingElem: 'Air', scalars: { scope: 1.10, potency: 0.90, uptime: 1.0, reliability: 1.0, mobility: 1.15, ccCap: 0.95, reaction: 1.15, cooldown: 1.0, risk: 0.95 }, description: '1.0s Knockback', ccDuration: 1.0, ccType: 'Knockback' },
-  { id: 'air_safe_attack', name: 'Breezelash', family: 'Air', variant: 'Attack', baseBand: 3, baseDamage: 6, governingAttr: 'AGI', governingElem: 'Air', scalars: { scope: 1.0, potency: 0.85, uptime: 1.0, reliability: 1.0, mobility: 1.25, ccCap: 1.0, reaction: 1.05, cooldown: 1.0, risk: 0.80 }, description: 'Mobile poke' },
-  { id: 'air_agg_attack', name: 'Stormrend', family: 'Air', variant: 'Attack', baseBand: 7, baseDamage: 15, governingAttr: 'AGI', governingElem: 'Air', scalars: { scope: 1.20, potency: 1.25, uptime: 1.0, reliability: 0.95, mobility: 1.30, ccCap: 1.0, reaction: 1.15, cooldown: 1.0, risk: 1.05 }, description: 'Rapid strikes' },
-  { id: 'spark_attack', name: 'Sparkpop', family: 'Spark', variant: 'Attack', baseBand: 5, baseDamage: 9, governingAttr: 'DEX', governingElem: 'Spark', scalars: { scope: 1.10, potency: 1.05, uptime: 1.0, reliability: 0.97, mobility: 1.05, ccCap: 1.0, reaction: 1.20, cooldown: 1.0, risk: 1.0 }, description: 'Electric burst' },
-  { id: 'spark_defense', name: 'Spark Net', family: 'Spark', variant: 'Defense', baseBand: 6, baseDamage: 5, mitigationMultiplier: 0.60, governingAttr: 'DEX', governingElem: 'Spark', scalars: { scope: 1.0, potency: 1.0, uptime: 1.0, reliability: 1.0, mobility: 1.0, ccCap: 1.0, reaction: 1.15, cooldown: 1.0, risk: 0.90 }, description: '60% mitigation', duration: 2000 },
-  { id: 'spark_control', name: 'Thunder-Clap', family: 'Spark', variant: 'Control', baseBand: 12, baseDamage: 6, governingAttr: 'DEX', governingElem: 'Spark', scalars: { scope: 1.15, potency: 1.0, uptime: 1.0, reliability: 1.0, mobility: 1.0, ccCap: 1.0, reaction: 1.25, cooldown: 1.0, risk: 1.0 }, description: '1.25s Stun', ccDuration: 1.25, ccType: 'Stun' },
-  { id: 'spark_safe_attack', name: 'Coilsnip', family: 'Spark', variant: 'Attack', baseBand: 3, baseDamage: 7, governingAttr: 'DEX', governingElem: 'Spark', scalars: { scope: 1.05, potency: 0.90, uptime: 1.0, reliability: 0.98, mobility: 1.10, ccCap: 1.0, reaction: 1.15, cooldown: 1.0, risk: 0.85 }, description: 'Quick zap' },
-  { id: 'spark_agg_attack', name: 'Arcburst', family: 'Spark', variant: 'Attack', baseBand: 8, baseDamage: 16, governingAttr: 'DEX', governingElem: 'Spark', scalars: { scope: 1.25, potency: 1.20, uptime: 1.0, reliability: 0.95, mobility: 1.05, ccCap: 1.0, reaction: 1.30, cooldown: 1.0, risk: 1.05 }, description: 'Chain lightning' },
-  { id: 'spark_heavy_defense', name: 'Arc Ward', family: 'Spark', variant: 'Defense', baseBand: 8, baseDamage: 6, mitigationMultiplier: 0.45, governingAttr: 'DEX', governingElem: 'Spark', scalars: { scope: 1.0, potency: 1.05, uptime: 1.15, reliability: 1.0, mobility: 1.0, ccCap: 1.0, reaction: 1.25, cooldown: 1.0, risk: 0.85 }, description: '55% mitigation', duration: 2500 },
+  {
+    id: 'fire_attack',
+    name: 'Embernick',
+    family: 'Fire',
+    variant: 'Attack',
+    baseBand: 5,
+    baseDamage: 10,
+    governingAttr: 'STR',
+    governingElem: 'Fire',
+    scalars: {
+      scope: 1.0,
+      potency: 1.1,
+      uptime: 1.0,
+      reliability: 1.0,
+      mobility: 1.0,
+      ccCap: 1.0,
+      reaction: 1.0,
+      cooldown: 1.0,
+      risk: 1.0
+    },
+    description: 'Fire strike',
+    kit: {
+      requiredTags: ['Close'],
+      preferredFamilies: ['Blade', 'Blunt'],
+      tags: ['Cleave', 'Control']
+    }
+  },
+  {
+    id: 'fire_defense',
+    name: 'Ember Mantle',
+    family: 'Fire',
+    variant: 'Defense',
+    baseBand: 5,
+    baseDamage: 5,
+    mitigationMultiplier: 0.5,
+    governingAttr: 'TOU',
+    governingElem: 'Fire',
+    scalars: {
+      scope: 1.0,
+      potency: 1.0,
+      uptime: 1.0,
+      reliability: 1.0,
+      mobility: 1.0,
+      ccCap: 1.0,
+      reaction: 1.0,
+      cooldown: 1.0,
+      risk: 0.9
+    },
+    description: '50% mitigation',
+    duration: 2000,
+    kit: {
+      requiredTags: ['Guard'],
+      preferredFamilies: ['Blade', 'Blunt', 'Arcane'],
+      tags: ['Parry', 'Control']
+    }
+  },
+  {
+    id: 'fire_control',
+    name: 'Ember Haze',
+    family: 'Fire',
+    variant: 'Control',
+    baseBand: 12,
+    baseDamage: 6,
+    governingAttr: 'DEX',
+    governingElem: 'Fire',
+    scalars: {
+      scope: 1.0,
+      potency: 1.0,
+      uptime: 1.0,
+      reliability: 0.98,
+      mobility: 1.0,
+      ccCap: 1.0,
+      reaction: 1.0,
+      cooldown: 1.0,
+      risk: 1.0
+    },
+    description: '1.25s Slow',
+    ccDuration: 1.25,
+    ccType: 'Slow',
+    kit: {
+      requiredTags: ['Control'],
+      preferredFamilies: ['Blade', 'Pierce', 'Arcane'],
+      tags: ['Reach', 'Parry']
+    }
+  },
+  {
+    id: 'fire_special',
+    name: 'Blazereap',
+    family: 'Fire',
+    variant: 'Special',
+    baseBand: 28,
+    baseDamage: 40,
+    governingAttr: 'STR',
+    governingElem: 'Fire',
+    scalars: {
+      scope: 1.25,
+      potency: 1.35,
+      uptime: 1.0,
+      reliability: 1.0,
+      mobility: 1.0,
+      ccCap: 1.0,
+      reaction: 1.15,
+      cooldown: 1.0,
+      risk: 1.0
+    },
+    description: 'Cone (R≥0.5)',
+    requiresResonance: 0.5,
+    kit: {
+      requiredTags: ['Cleave'],
+      preferredFamilies: ['Blade', 'Blunt'],
+      tags: ['AoE', 'Heavy']
+    }
+  },
+  {
+    id: 'fire_safe_attack',
+    name: 'Flicker',
+    family: 'Fire',
+    variant: 'Attack',
+    baseBand: 3,
+    baseDamage: 7,
+    governingAttr: 'DEX',
+    governingElem: 'Fire',
+    scalars: {
+      scope: 1.0,
+      potency: 0.85,
+      uptime: 1.0,
+      reliability: 1.0,
+      mobility: 1.1,
+      ccCap: 1.0,
+      reaction: 1.0,
+      cooldown: 1.0,
+      risk: 0.85
+    },
+    description: 'Safe jab',
+    kit: {
+      requiredTags: ['Close'],
+      preferredFamilies: ['Blade', 'Pierce'],
+      tags: ['Finesse', 'Parry']
+    }
+  },
+  {
+    id: 'fire_heavy_defense',
+    name: 'Ember-Plate',
+    family: 'Fire',
+    variant: 'Defense',
+    baseBand: 7,
+    baseDamage: 8,
+    mitigationMultiplier: 0.35,
+    governingAttr: 'TOU',
+    governingElem: 'Fire',
+    scalars: {
+      scope: 1.0,
+      potency: 1.1,
+      uptime: 1.3,
+      reliability: 1.0,
+      mobility: 0.85,
+      ccCap: 1.0,
+      reaction: 1.0,
+      cooldown: 1.0,
+      risk: 0.8
+    },
+    description: '65% mitigation',
+    duration: 3000,
+    kit: {
+      requiredTags: ['Guard'],
+      preferredFamilies: ['Blunt', 'Blade'],
+      tags: ['Stun', 'Heavy']
+    }
+  },
+  {
+    id: 'fire_agg_attack',
+    name: 'Emberstorm',
+    family: 'Fire',
+    variant: 'Attack',
+    baseBand: 8,
+    baseDamage: 18,
+    governingAttr: 'STR',
+    governingElem: 'Fire',
+    scalars: {
+      scope: 1.15,
+      potency: 1.3,
+      uptime: 1.0,
+      reliability: 1.0,
+      mobility: 0.9,
+      ccCap: 1.0,
+      reaction: 1.1,
+      cooldown: 1.0,
+      risk: 1.1
+    },
+    description: 'Aggressive AoE',
+    kit: {
+      requiredTags: ['Cleave'],
+      preferredFamilies: ['Blade', 'Blunt'],
+      tags: ['AoE', 'Heavy']
+    }
+  },
+  {
+    id: 'water_attack',
+    name: 'Rippletap',
+    family: 'Water',
+    variant: 'Attack',
+    baseBand: 5,
+    baseDamage: 9,
+    governingAttr: 'SPR',
+    governingElem: 'Water',
+    scalars: {
+      scope: 1.0,
+      potency: 1.05,
+      uptime: 1.15,
+      reliability: 1.0,
+      mobility: 1.0,
+      ccCap: 1.0,
+      reaction: 1.1,
+      cooldown: 1.0,
+      risk: 1.0
+    },
+    description: 'Water strike',
+    kit: {
+      requiredTags: ['Close'],
+      preferredFamilies: ['Blade', 'Pierce', 'Arcane'],
+      tags: ['Finesse', 'Control']
+    }
+  },
+  {
+    id: 'water_defense',
+    name: 'Steamscreen',
+    family: 'Water',
+    variant: 'Defense',
+    baseBand: 6,
+    baseDamage: 4,
+    mitigationMultiplier: 0.6,
+    governingAttr: 'TOU',
+    governingElem: 'Water',
+    scalars: {
+      scope: 1.0,
+      potency: 0.95,
+      uptime: 1.2,
+      reliability: 1.0,
+      mobility: 1.0,
+      ccCap: 1.0,
+      reaction: 1.15,
+      cooldown: 1.0,
+      risk: 0.92
+    },
+    description: '60% mitigation',
+    duration: 2000,
+    kit: {
+      requiredTags: ['Guard'],
+      preferredFamilies: ['Arcane', 'Blade', 'Pierce'],
+      tags: ['Control', 'Channel']
+    }
+  },
+  {
+    id: 'water_control',
+    name: 'Drift Hold',
+    family: 'Water',
+    variant: 'Control',
+    baseBand: 13,
+    baseDamage: 5,
+    governingAttr: 'SPR',
+    governingElem: 'Water',
+    scalars: {
+      scope: 1.05,
+      potency: 0.95,
+      uptime: 1.1,
+      reliability: 1.0,
+      mobility: 1.0,
+      ccCap: 1.05,
+      reaction: 1.2,
+      cooldown: 1.0,
+      risk: 1.0
+    },
+    description: '1.5s Slow',
+    ccDuration: 1.5,
+    ccType: 'Slow',
+    kit: {
+      requiredTags: ['Control'],
+      preferredFamilies: ['Pierce', 'Arcane'],
+      tags: ['Reach', 'Channel']
+    }
+  },
+  {
+    id: 'water_safe_attack',
+    name: 'Measure',
+    family: 'Water',
+    variant: 'Attack',
+    baseBand: 3,
+    baseDamage: 6,
+    governingAttr: 'SPR',
+    governingElem: 'Water',
+    scalars: {
+      scope: 1.0,
+      potency: 0.8,
+      uptime: 1.2,
+      reliability: 1.0,
+      mobility: 1.05,
+      ccCap: 1.0,
+      reaction: 1.05,
+      cooldown: 1.0,
+      risk: 0.85
+    },
+    description: 'Sustained poke',
+    kit: {
+      requiredTags: ['Close'],
+      preferredFamilies: ['Pierce', 'Blade'],
+      tags: ['Finesse', 'Control']
+    }
+  },
+  {
+    id: 'water_heavy_defense',
+    name: 'Sunken Aegis',
+    family: 'Water',
+    variant: 'Defense',
+    baseBand: 7,
+    baseDamage: 6,
+    mitigationMultiplier: 0.3,
+    governingAttr: 'TOU',
+    governingElem: 'Water',
+    scalars: {
+      scope: 1.0,
+      potency: 0.85,
+      uptime: 1.4,
+      reliability: 1.0,
+      mobility: 0.8,
+      ccCap: 1.0,
+      reaction: 1.2,
+      cooldown: 1.0,
+      risk: 0.75
+    },
+    description: '70% mitigation',
+    duration: 3500,
+    kit: {
+      requiredTags: ['Guard'],
+      preferredFamilies: ['Arcane', 'Blunt'],
+      tags: ['Channel', 'Heavy']
+    }
+  },
+  {
+    id: 'stone_attack',
+    name: 'Ironkiss',
+    family: 'Stone',
+    variant: 'Attack',
+    baseBand: 6,
+    baseDamage: 12,
+    governingAttr: 'STR',
+    governingElem: 'Stone',
+    scalars: {
+      scope: 1.0,
+      potency: 1.2,
+      uptime: 1.0,
+      reliability: 1.0,
+      mobility: 0.95,
+      ccCap: 1.0,
+      reaction: 1.0,
+      cooldown: 1.0,
+      risk: 1.05
+    },
+    description: 'Heavy strike',
+    kit: {
+      requiredTags: ['Heavy'],
+      preferredFamilies: ['Blunt', 'Blade'],
+      tags: ['Cleave', 'Stun']
+    }
+  },
+  {
+    id: 'stone_defense',
+    name: 'Ironbark Hold',
+    family: 'Stone',
+    variant: 'Defense',
+    baseBand: 4,
+    baseDamage: 3,
+    mitigationMultiplier: 0.4,
+    governingAttr: 'TOU',
+    governingElem: 'Stone',
+    scalars: {
+      scope: 1.0,
+      potency: 0.9,
+      uptime: 1.25,
+      reliability: 1.0,
+      mobility: 0.9,
+      ccCap: 1.0,
+      reaction: 1.0,
+      cooldown: 1.0,
+      risk: 0.85
+    },
+    description: '60% mitigation',
+    duration: 2500,
+    kit: {
+      requiredTags: ['Guard'],
+      preferredFamilies: ['Blunt', 'Blade'],
+      tags: ['Stun', 'Heavy']
+    }
+  },
+  {
+    id: 'stone_control',
+    name: 'Ground-Lock',
+    family: 'Stone',
+    variant: 'Control',
+    baseBand: 14,
+    baseDamage: 7,
+    governingAttr: 'TOU',
+    governingElem: 'Stone',
+    scalars: {
+      scope: 1.0,
+      potency: 1.05,
+      uptime: 1.0,
+      reliability: 1.0,
+      mobility: 0.95,
+      ccCap: 1.1,
+      reaction: 1.0,
+      cooldown: 1.0,
+      risk: 1.0
+    },
+    description: '1.75s Root',
+    ccDuration: 1.75,
+    ccType: 'Root',
+    kit: {
+      requiredTags: ['Control'],
+      preferredFamilies: ['Blunt', 'Pierce'],
+      tags: ['Knockback', 'Stun']
+    }
+  },
+  {
+    id: 'stone_safe_attack',
+    name: 'Halfguard',
+    family: 'Stone',
+    variant: 'Attack',
+    baseBand: 4,
+    baseDamage: 9,
+    governingAttr: 'STR',
+    governingElem: 'Stone',
+    scalars: {
+      scope: 1.0,
+      potency: 0.95,
+      uptime: 1.0,
+      reliability: 1.0,
+      mobility: 0.9,
+      ccCap: 1.0,
+      reaction: 1.0,
+      cooldown: 1.0,
+      risk: 0.8
+    },
+    description: 'Defensive strike',
+    kit: {
+      requiredTags: ['Guard'],
+      preferredFamilies: ['Blunt', 'Blade'],
+      tags: ['Close', 'Control']
+    }
+  },
+  {
+    id: 'stone_agg_attack',
+    name: 'Quakeblade',
+    family: 'Stone',
+    variant: 'Attack',
+    baseBand: 9,
+    baseDamage: 22,
+    governingAttr: 'STR',
+    governingElem: 'Stone',
+    scalars: {
+      scope: 1.1,
+      potency: 1.4,
+      uptime: 1.0,
+      reliability: 1.0,
+      mobility: 0.8,
+      ccCap: 1.0,
+      reaction: 1.0,
+      cooldown: 1.0,
+      risk: 1.15
+    },
+    description: 'Heavy slam',
+    kit: {
+      requiredTags: ['Heavy'],
+      preferredFamilies: ['Blunt'],
+      tags: ['Cleave', 'Knockback']
+    }
+  },
+  {
+    id: 'stone_heavy_defense',
+    name: 'Granite-Lock',
+    family: 'Stone',
+    variant: 'Defense',
+    baseBand: 6,
+    baseDamage: 5,
+    mitigationMultiplier: 0.25,
+    governingAttr: 'TOU',
+    governingElem: 'Stone',
+    scalars: {
+      scope: 1.0,
+      potency: 0.8,
+      uptime: 1.5,
+      reliability: 1.0,
+      mobility: 0.7,
+      ccCap: 1.0,
+      reaction: 1.0,
+      cooldown: 1.0,
+      risk: 0.7
+    },
+    description: '75% mitigation',
+    duration: 4000,
+    kit: {
+      requiredTags: ['Guard'],
+      preferredFamilies: ['Blunt'],
+      tags: ['Heavy', 'Knockback']
+    }
+  },
+  {
+    id: 'air_attack',
+    name: 'Galespike',
+    family: 'Air',
+    variant: 'Attack',
+    baseBand: 4,
+    baseDamage: 8,
+    governingAttr: 'AGI',
+    governingElem: 'Air',
+    scalars: {
+      scope: 1.0,
+      potency: 1.0,
+      uptime: 1.0,
+      reliability: 0.98,
+      mobility: 1.15,
+      ccCap: 1.0,
+      reaction: 1.05,
+      cooldown: 1.0,
+      risk: 0.95
+    },
+    description: 'Swift strike',
+    kit: {
+      requiredTags: ['Close'],
+      preferredFamilies: ['Blade', 'Pierce'],
+      tags: ['Mobility', 'Finesse']
+    }
+  },
+  {
+    id: 'air_defense',
+    name: 'Gale Brace',
+    family: 'Air',
+    variant: 'Defense',
+    baseBand: 5,
+    baseDamage: 4,
+    mitigationMultiplier: 0.65,
+    governingAttr: 'AGI',
+    governingElem: 'Air',
+    scalars: {
+      scope: 1.0,
+      potency: 0.95,
+      uptime: 1.0,
+      reliability: 1.0,
+      mobility: 1.2,
+      ccCap: 1.0,
+      reaction: 1.1,
+      cooldown: 1.0,
+      risk: 0.88
+    },
+    description: '65% mitigation',
+    duration: 1800,
+    kit: {
+      requiredTags: ['Guard'],
+      preferredFamilies: ['Blade', 'Pierce', 'Arcane'],
+      tags: ['Dodge', 'Mobility']
+    }
+  },
+  {
+    id: 'air_control',
+    name: 'Gale Gust',
+    family: 'Air',
+    variant: 'Control',
+    baseBand: 11,
+    baseDamage: 5,
+    governingAttr: 'AGI',
+    governingElem: 'Air',
+    scalars: {
+      scope: 1.1,
+      potency: 0.9,
+      uptime: 1.0,
+      reliability: 1.0,
+      mobility: 1.15,
+      ccCap: 0.95,
+      reaction: 1.15,
+      cooldown: 1.0,
+      risk: 0.95
+    },
+    description: '1.0s Knockback',
+    ccDuration: 1.0,
+    ccType: 'Knockback',
+    kit: {
+      requiredTags: ['Control'],
+      preferredFamilies: ['Pierce', 'Ranged'],
+      tags: ['Mobility', 'Knockback']
+    }
+  },
+  {
+    id: 'air_safe_attack',
+    name: 'Breezelash',
+    family: 'Air',
+    variant: 'Attack',
+    baseBand: 3,
+    baseDamage: 6,
+    governingAttr: 'AGI',
+    governingElem: 'Air',
+    scalars: {
+      scope: 1.0,
+      potency: 0.85,
+      uptime: 1.0,
+      reliability: 1.0,
+      mobility: 1.25,
+      ccCap: 1.0,
+      reaction: 1.05,
+      cooldown: 1.0,
+      risk: 0.8
+    },
+    description: 'Mobile poke',
+    kit: {
+      requiredTags: ['Close'],
+      preferredFamilies: ['Pierce', 'Blade'],
+      tags: ['Mobility', 'Finesse']
+    }
+  },
+  {
+    id: 'air_agg_attack',
+    name: 'Stormrend',
+    family: 'Air',
+    variant: 'Attack',
+    baseBand: 7,
+    baseDamage: 15,
+    governingAttr: 'AGI',
+    governingElem: 'Air',
+    scalars: {
+      scope: 1.2,
+      potency: 1.25,
+      uptime: 1.0,
+      reliability: 0.95,
+      mobility: 1.3,
+      ccCap: 1.0,
+      reaction: 1.15,
+      cooldown: 1.0,
+      risk: 1.05
+    },
+    description: 'Rapid strikes',
+    kit: {
+      requiredTags: ['Close'],
+      preferredFamilies: ['Pierce', 'Blade'],
+      tags: ['Mobility', 'AoE']
+    }
+  },
+  {
+    id: 'spark_attack',
+    name: 'Sparkpop',
+    family: 'Spark',
+    variant: 'Attack',
+    baseBand: 5,
+    baseDamage: 9,
+    governingAttr: 'DEX',
+    governingElem: 'Spark',
+    scalars: {
+      scope: 1.1,
+      potency: 1.05,
+      uptime: 1.0,
+      reliability: 0.97,
+      mobility: 1.05,
+      ccCap: 1.0,
+      reaction: 1.2,
+      cooldown: 1.0,
+      risk: 1.0
+    },
+    description: 'Electric burst',
+    kit: {
+      requiredTags: ['Ranged'],
+      preferredFamilies: ['Ranged', 'Arcane'],
+      tags: ['Finesse', 'Precision']
+    }
+  },
+  {
+    id: 'spark_defense',
+    name: 'Spark Net',
+    family: 'Spark',
+    variant: 'Defense',
+    baseBand: 6,
+    baseDamage: 5,
+    mitigationMultiplier: 0.6,
+    governingAttr: 'DEX',
+    governingElem: 'Spark',
+    scalars: {
+      scope: 1.0,
+      potency: 1.0,
+      uptime: 1.0,
+      reliability: 1.0,
+      mobility: 1.0,
+      ccCap: 1.0,
+      reaction: 1.15,
+      cooldown: 1.0,
+      risk: 0.9
+    },
+    description: '60% mitigation',
+    duration: 2000,
+    kit: {
+      requiredTags: ['Guard'],
+      preferredFamilies: ['Ranged', 'Arcane'],
+      tags: ['Control', 'Channel']
+    }
+  },
+  {
+    id: 'spark_control',
+    name: 'Thunder-Clap',
+    family: 'Spark',
+    variant: 'Control',
+    baseBand: 12,
+    baseDamage: 6,
+    governingAttr: 'DEX',
+    governingElem: 'Spark',
+    scalars: {
+      scope: 1.15,
+      potency: 1.0,
+      uptime: 1.0,
+      reliability: 1.0,
+      mobility: 1.0,
+      ccCap: 1.0,
+      reaction: 1.25,
+      cooldown: 1.0,
+      risk: 1.0
+    },
+    description: '1.25s Stun',
+    ccDuration: 1.25,
+    ccType: 'Stun',
+    kit: {
+      requiredTags: ['Control'],
+      preferredFamilies: ['Ranged', 'Arcane'],
+      tags: ['Stun', 'Precision']
+    }
+  },
+  {
+    id: 'spark_safe_attack',
+    name: 'Coilsnip',
+    family: 'Spark',
+    variant: 'Attack',
+    baseBand: 3,
+    baseDamage: 7,
+    governingAttr: 'DEX',
+    governingElem: 'Spark',
+    scalars: {
+      scope: 1.05,
+      potency: 0.9,
+      uptime: 1.0,
+      reliability: 0.98,
+      mobility: 1.1,
+      ccCap: 1.0,
+      reaction: 1.15,
+      cooldown: 1.0,
+      risk: 0.85
+    },
+    description: 'Quick zap',
+    kit: {
+      requiredTags: ['Ranged'],
+      preferredFamilies: ['Ranged'],
+      tags: ['Finesse', 'Mobility']
+    }
+  },
+  {
+    id: 'spark_agg_attack',
+    name: 'Arcburst',
+    family: 'Spark',
+    variant: 'Attack',
+    baseBand: 8,
+    baseDamage: 16,
+    governingAttr: 'DEX',
+    governingElem: 'Spark',
+    scalars: {
+      scope: 1.25,
+      potency: 1.2,
+      uptime: 1.0,
+      reliability: 0.95,
+      mobility: 1.05,
+      ccCap: 1.0,
+      reaction: 1.3,
+      cooldown: 1.0,
+      risk: 1.05
+    },
+    description: 'Chain lightning',
+    kit: {
+      requiredTags: ['Ranged'],
+      preferredFamilies: ['Ranged'],
+      tags: ['AoE', 'Precision']
+    }
+  },
+  {
+    id: 'spark_heavy_defense',
+    name: 'Arc Ward',
+    family: 'Spark',
+    variant: 'Defense',
+    baseBand: 8,
+    baseDamage: 6,
+    mitigationMultiplier: 0.45,
+    governingAttr: 'DEX',
+    governingElem: 'Spark',
+    scalars: {
+      scope: 1.0,
+      potency: 1.05,
+      uptime: 1.15,
+      reliability: 1.0,
+      mobility: 1.0,
+      ccCap: 1.0,
+      reaction: 1.25,
+      cooldown: 1.0,
+      risk: 0.85
+    },
+    description: '55% mitigation',
+    duration: 2500,
+    kit: {
+      requiredTags: ['Guard'],
+      preferredFamilies: ['Ranged', 'Arcane'],
+      tags: ['Channel', 'Control']
+    }
+  },
   { id: 'verdant_attack', name: 'Verdant Strike', family: 'Verdant', variant: 'Attack', baseBand: 5, baseDamage: 8, governingAttr: 'SPR', governingElem: 'Verdant', scalars: { scope: 1.0, potency: 1.0, uptime: 1.25, reliability: 1.0, mobility: 1.0, ccCap: 1.0, reaction: 1.10, cooldown: 1.0, risk: 1.0 }, description: 'Nature strike' },
   { id: 'verdant_defense', name: 'Verdant Barrier', family: 'Verdant', variant: 'Defense', baseBand: 5, baseDamage: 3, mitigationMultiplier: 0.55, governingAttr: 'SPR', governingElem: 'Verdant', scalars: { scope: 1.0, potency: 0.90, uptime: 1.30, reliability: 1.0, mobility: 1.0, ccCap: 1.0, reaction: 1.10, cooldown: 1.0, risk: 0.90 }, description: '55% mitigation', duration: 2200 },
   { id: 'verdant_control', name: 'Verdant Vines', family: 'Verdant', variant: 'Control', baseBand: 13, baseDamage: 5, governingAttr: 'SPR', governingElem: 'Verdant', scalars: { scope: 1.05, potency: 0.95, uptime: 1.20, reliability: 1.0, mobility: 0.95, ccCap: 1.05, reaction: 1.15, cooldown: 1.0, risk: 1.0 }, description: '1.5s Entangle', ccDuration: 1.5, ccType: 'Entangle' },
@@ -98,10 +946,118 @@ export const ABILITIES = [
   { id: 'essence_safe_attack', name: 'Prism Touch', family: 'Essence', variant: 'Attack', baseBand: 4, baseDamage: 8, governingAttr: 'INS', governingElem: 'Essence', scalars: { scope: 1.0, potency: 1.00, uptime: 1.0, reliability: 1.0, mobility: 1.15, ccCap: 1.0, reaction: 1.10, cooldown: 1.0, risk: 0.90 }, description: 'Phase tap' },
   { id: 'essence_agg_attack', name: 'Essence Fission', family: 'Essence', variant: 'Attack', baseBand: 10, baseDamage: 20, governingAttr: 'INS', governingElem: 'Essence', scalars: { scope: 1.15, potency: 1.35, uptime: 1.0, reliability: 1.0, mobility: 1.10, ccCap: 1.0, reaction: 1.20, cooldown: 1.0, risk: 1.10 }, description: 'Reality tear' },
   { id: 'essence_heavy_defense', name: 'Stasis Tower', family: 'Essence', variant: 'Defense', baseBand: 9, baseDamage: 5, mitigationMultiplier: 0.40, governingAttr: 'INS', governingElem: 'Essence', scalars: { scope: 1.0, potency: 1.10, uptime: 1.25, reliability: 1.0, mobility: 0.85, ccCap: 1.0, reaction: 1.15, cooldown: 1.0, risk: 0.80 }, description: '60% mitigation', duration: 3000 },
-  { id: 'water_special', name: 'Torrent Cascade', family: 'Water', variant: 'Special', baseBand: 25, baseDamage: 35, governingAttr: 'SPR', governingElem: 'Water', scalars: { scope: 1.20, potency: 1.30, uptime: 1.15, reliability: 1.0, mobility: 1.0, ccCap: 1.0, reaction: 1.20, cooldown: 1.0, risk: 1.0 }, description: 'Wave burst (R≥0.5)', requiresResonance: 0.5 },
-  { id: 'stone_special', name: 'Earthshatter', family: 'Stone', variant: 'Special', baseBand: 30, baseDamage: 50, governingAttr: 'STR', governingElem: 'Stone', scalars: { scope: 1.30, potency: 1.45, uptime: 1.0, reliability: 1.0, mobility: 0.85, ccCap: 1.0, reaction: 1.0, cooldown: 1.0, risk: 1.10 }, description: 'Massive AoE (R≥0.5)', requiresResonance: 0.5 },
-  { id: 'air_special', name: 'Cyclone', family: 'Air', variant: 'Special', baseBand: 22, baseDamage: 28, governingAttr: 'AGI', governingElem: 'Air', scalars: { scope: 1.25, potency: 1.25, uptime: 1.0, reliability: 1.0, mobility: 1.25, ccCap: 1.0, reaction: 1.15, cooldown: 1.0, risk: 0.95 }, description: 'Mobile vortex (R≥0.5)', requiresResonance: 0.5 },
-  { id: 'spark_special', name: 'Lightning Storm', family: 'Spark', variant: 'Special', baseBand: 26, baseDamage: 38, governingAttr: 'DEX', governingElem: 'Spark', scalars: { scope: 1.35, potency: 1.30, uptime: 1.0, reliability: 0.98, mobility: 1.05, ccCap: 1.0, reaction: 1.30, cooldown: 1.0, risk: 1.05 }, description: 'Chain AoE (R≥0.5)', requiresResonance: 0.5 },
+  {
+    id: 'water_special',
+    name: 'Torrent Cascade',
+    family: 'Water',
+    variant: 'Special',
+    baseBand: 25,
+    baseDamage: 35,
+    governingAttr: 'SPR',
+    governingElem: 'Water',
+    scalars: {
+      scope: 1.2,
+      potency: 1.3,
+      uptime: 1.15,
+      reliability: 1.0,
+      mobility: 1.0,
+      ccCap: 1.0,
+      reaction: 1.2,
+      cooldown: 1.0,
+      risk: 1.0
+    },
+    description: 'Wave burst (R≥0.5)',
+    requiresResonance: 0.5,
+    kit: {
+      requiredTags: ['Cleave'],
+      preferredFamilies: ['Blade', 'Pierce'],
+      tags: ['AoE', 'Reach']
+    }
+  },
+  {
+    id: 'stone_special',
+    name: 'Earthshatter',
+    family: 'Stone',
+    variant: 'Special',
+    baseBand: 30,
+    baseDamage: 50,
+    governingAttr: 'STR',
+    governingElem: 'Stone',
+    scalars: {
+      scope: 1.3,
+      potency: 1.45,
+      uptime: 1.0,
+      reliability: 1.0,
+      mobility: 0.85,
+      ccCap: 1.0,
+      reaction: 1.0,
+      cooldown: 1.0,
+      risk: 1.1
+    },
+    description: 'Massive AoE (R≥0.5)',
+    requiresResonance: 0.5,
+    kit: {
+      requiredTags: ['Heavy'],
+      preferredFamilies: ['Blunt'],
+      tags: ['Cleave', 'Knockback']
+    }
+  },
+  {
+    id: 'air_special',
+    name: 'Cyclone',
+    family: 'Air',
+    variant: 'Special',
+    baseBand: 22,
+    baseDamage: 28,
+    governingAttr: 'AGI',
+    governingElem: 'Air',
+    scalars: {
+      scope: 1.25,
+      potency: 1.25,
+      uptime: 1.0,
+      reliability: 1.0,
+      mobility: 1.25,
+      ccCap: 1.0,
+      reaction: 1.15,
+      cooldown: 1.0,
+      risk: 0.95
+    },
+    description: 'Mobile vortex (R≥0.5)',
+    requiresResonance: 0.5,
+    kit: {
+      requiredTags: ['Cleave'],
+      preferredFamilies: ['Pierce', 'Ranged'],
+      tags: ['AoE', 'Mobility']
+    }
+  },
+  {
+    id: 'spark_special',
+    name: 'Lightning Storm',
+    family: 'Spark',
+    variant: 'Special',
+    baseBand: 26,
+    baseDamage: 38,
+    governingAttr: 'DEX',
+    governingElem: 'Spark',
+    scalars: {
+      scope: 1.35,
+      potency: 1.3,
+      uptime: 1.0,
+      reliability: 0.98,
+      mobility: 1.05,
+      ccCap: 1.0,
+      reaction: 1.3,
+      cooldown: 1.0,
+      risk: 1.05
+    },
+    description: 'Chain AoE (R≥0.5)',
+    requiresResonance: 0.5,
+    kit: {
+      requiredTags: ['Ranged'],
+      preferredFamilies: ['Ranged'],
+      tags: ['AoE', 'Precision']
+    }
+  },
   {
     id: 'verdant_special',
     name: 'Regrowth Pulse',
@@ -124,14 +1080,181 @@ export const ABILITIES = [
       risk: 1.0
     },
     description: 'Pulse of damage with restorative bloom',
-    requiresResonance: 0.5
+    requiresResonance: 0.5,
+    kit: {
+      requiredTags: ['Control'],
+      preferredFamilies: ['Arcane', 'Pierce'],
+      tags: ['AoE', 'Channel']
+    }
   },
-  { id: 'essence_special', name: 'Void Rift', family: 'Essence', variant: 'Special', baseBand: 32, baseDamage: 45, governingAttr: 'INS', governingElem: 'Essence', scalars: { scope: 1.20, potency: 1.40, uptime: 1.10, reliability: 1.0, mobility: 1.15, ccCap: 1.0, reaction: 1.25, cooldown: 1.0, risk: 1.05 }, description: 'Reality tear (R≥0.5)', requiresResonance: 0.5 },
-  { id: 'fire_ultimate', name: 'Inferno', family: 'Fire', variant: 'Special', baseBand: 40, baseDamage: 70, governingAttr: 'STR', governingElem: 'Fire', scalars: { scope: 1.50, potency: 1.60, uptime: 1.0, reliability: 1.0, mobility: 0.90, ccCap: 1.0, reaction: 1.25, cooldown: 1.0, risk: 1.15 }, description: 'Massive fire (R≥0.7)', requiresResonance: 0.7 },
-  { id: 'water_ultimate', name: 'Tidal Wave', family: 'Water', variant: 'Special', baseBand: 38, baseDamage: 60, governingAttr: 'SPR', governingElem: 'Water', scalars: { scope: 1.45, potency: 1.50, uptime: 1.20, reliability: 1.0, mobility: 1.0, ccCap: 1.0, reaction: 1.30, cooldown: 1.0, risk: 1.10 }, description: 'Tsunami (R≥0.7)', requiresResonance: 0.7 },
-  { id: 'stone_ultimate', name: 'Meteor Strike', family: 'Stone', variant: 'Special', baseBand: 42, baseDamage: 80, governingAttr: 'STR', governingElem: 'Stone', scalars: { scope: 1.40, potency: 1.70, uptime: 1.0, reliability: 1.0, mobility: 0.80, ccCap: 1.0, reaction: 1.0, cooldown: 1.0, risk: 1.20 }, description: 'Devastating (R≥0.7)', requiresResonance: 0.7 },
-  { id: 'air_ultimate', name: 'Hurricane', family: 'Air', variant: 'Special', baseBand: 35, baseDamage: 55, governingAttr: 'AGI', governingElem: 'Air', scalars: { scope: 1.55, potency: 1.45, uptime: 1.0, reliability: 1.0, mobility: 1.30, ccCap: 1.0, reaction: 1.20, cooldown: 1.0, risk: 1.0 }, description: 'Massive vortex (R≥0.7)', requiresResonance: 0.7 },
-  { id: 'spark_ultimate', name: 'Thunderstorm', family: 'Spark', variant: 'Special', baseBand: 36, baseDamage: 65, governingAttr: 'DEX', governingElem: 'Spark', scalars: { scope: 1.60, potency: 1.55, uptime: 1.0, reliability: 1.0, mobility: 1.10, ccCap: 1.0, reaction: 1.40, cooldown: 1.0, risk: 1.10 }, description: 'Chain storm (R≥0.7)', requiresResonance: 0.7 },
+  {
+    id: 'essence_special',
+    name: 'Void Rift',
+    family: 'Essence',
+    variant: 'Special',
+    baseBand: 32,
+    baseDamage: 45,
+    governingAttr: 'INS',
+    governingElem: 'Essence',
+    scalars: {
+      scope: 1.2,
+      potency: 1.4,
+      uptime: 1.1,
+      reliability: 1.0,
+      mobility: 1.15,
+      ccCap: 1.0,
+      reaction: 1.25,
+      cooldown: 1.0,
+      risk: 1.05
+    },
+    description: 'Reality tear (R≥0.5)',
+    requiresResonance: 0.5,
+    kit: {
+      requiredTags: ['Channel'],
+      preferredFamilies: ['Arcane', 'Ranged'],
+      tags: ['Control', 'AoE']
+    }
+  },
+  {
+    id: 'fire_ultimate',
+    name: 'Inferno',
+    family: 'Fire',
+    variant: 'Special',
+    baseBand: 40,
+    baseDamage: 70,
+    governingAttr: 'STR',
+    governingElem: 'Fire',
+    scalars: {
+      scope: 1.5,
+      potency: 1.6,
+      uptime: 1.0,
+      reliability: 1.0,
+      mobility: 0.9,
+      ccCap: 1.0,
+      reaction: 1.25,
+      cooldown: 1.0,
+      risk: 1.15
+    },
+    description: 'Massive fire (R≥0.7)',
+    requiresResonance: 0.7,
+    kit: {
+      requiredTags: ['Cleave'],
+      preferredFamilies: ['Blade', 'Blunt'],
+      tags: ['AoE', 'Heavy']
+    }
+  },
+  {
+    id: 'water_ultimate',
+    name: 'Tidal Wave',
+    family: 'Water',
+    variant: 'Special',
+    baseBand: 38,
+    baseDamage: 60,
+    governingAttr: 'SPR',
+    governingElem: 'Water',
+    scalars: {
+      scope: 1.45,
+      potency: 1.5,
+      uptime: 1.2,
+      reliability: 1.0,
+      mobility: 1.0,
+      ccCap: 1.0,
+      reaction: 1.3,
+      cooldown: 1.0,
+      risk: 1.1
+    },
+    description: 'Tsunami (R≥0.7)',
+    requiresResonance: 0.7,
+    kit: {
+      requiredTags: ['Cleave'],
+      preferredFamilies: ['Blade', 'Pierce', 'Ranged'],
+      tags: ['AoE', 'Control']
+    }
+  },
+  {
+    id: 'stone_ultimate',
+    name: 'Meteor Strike',
+    family: 'Stone',
+    variant: 'Special',
+    baseBand: 42,
+    baseDamage: 80,
+    governingAttr: 'STR',
+    governingElem: 'Stone',
+    scalars: {
+      scope: 1.4,
+      potency: 1.7,
+      uptime: 1.0,
+      reliability: 1.0,
+      mobility: 0.8,
+      ccCap: 1.0,
+      reaction: 1.0,
+      cooldown: 1.0,
+      risk: 1.2
+    },
+    description: 'Devastating (R≥0.7)',
+    requiresResonance: 0.7,
+    kit: {
+      requiredTags: ['Heavy'],
+      preferredFamilies: ['Blunt'],
+      tags: ['Cleave', 'Knockback']
+    }
+  },
+  {
+    id: 'air_ultimate',
+    name: 'Hurricane',
+    family: 'Air',
+    variant: 'Special',
+    baseBand: 35,
+    baseDamage: 55,
+    governingAttr: 'AGI',
+    governingElem: 'Air',
+    scalars: {
+      scope: 1.55,
+      potency: 1.45,
+      uptime: 1.0,
+      reliability: 1.0,
+      mobility: 1.3,
+      ccCap: 1.0,
+      reaction: 1.2,
+      cooldown: 1.0,
+      risk: 1.0
+    },
+    description: 'Massive vortex (R≥0.7)',
+    requiresResonance: 0.7,
+    kit: {
+      requiredTags: ['Cleave'],
+      preferredFamilies: ['Pierce', 'Ranged'],
+      tags: ['AoE', 'Mobility']
+    }
+  },
+  {
+    id: 'spark_ultimate',
+    name: 'Thunderstorm',
+    family: 'Spark',
+    variant: 'Special',
+    baseBand: 36,
+    baseDamage: 65,
+    governingAttr: 'DEX',
+    governingElem: 'Spark',
+    scalars: {
+      scope: 1.6,
+      potency: 1.55,
+      uptime: 1.0,
+      reliability: 1.0,
+      mobility: 1.1,
+      ccCap: 1.0,
+      reaction: 1.4,
+      cooldown: 1.0,
+      risk: 1.1
+    },
+    description: 'Chain storm (R≥0.7)',
+    requiresResonance: 0.7,
+    kit: {
+      requiredTags: ['Ranged'],
+      preferredFamilies: ['Ranged'],
+      tags: ['AoE', 'Precision']
+    }
+  },
   {
     id: 'verdant_ultimate',
     name: 'World Tree',
@@ -154,9 +1277,41 @@ export const ABILITIES = [
       risk: 1.05
     },
     description: 'World root that devastates and renews (R≥0.7)',
-    requiresResonance: 0.7
+    requiresResonance: 0.7,
+    kit: {
+      requiredTags: ['Control'],
+      preferredFamilies: ['Arcane', 'Pierce'],
+      tags: ['AoE', 'Channel']
+    }
   },
-  { id: 'essence_ultimate', name: 'Reality Collapse', family: 'Essence', variant: 'Special', baseBand: 45, baseDamage: 75, governingAttr: 'INS', governingElem: 'Essence', scalars: { scope: 1.40, potency: 1.65, uptime: 1.15, reliability: 1.0, mobility: 1.20, ccCap: 1.0, reaction: 1.35, cooldown: 1.0, risk: 1.15 }, description: 'Void collapse (R≥0.7)', requiresResonance: 0.7 }
+  {
+    id: 'essence_ultimate',
+    name: 'Reality Collapse',
+    family: 'Essence',
+    variant: 'Special',
+    baseBand: 45,
+    baseDamage: 75,
+    governingAttr: 'INS',
+    governingElem: 'Essence',
+    scalars: {
+      scope: 1.4,
+      potency: 1.65,
+      uptime: 1.15,
+      reliability: 1.0,
+      mobility: 1.2,
+      ccCap: 1.0,
+      reaction: 1.35,
+      cooldown: 1.0,
+      risk: 1.15
+    },
+    description: 'Void collapse (R≥0.7)',
+    requiresResonance: 0.7,
+    kit: {
+      requiredTags: ['Channel'],
+      preferredFamilies: ['Arcane', 'Ranged'],
+      tags: ['Control', 'AoE']
+    }
+  }
 ];
 
 export const initialCharacter = {
