@@ -92,6 +92,8 @@ export function enemyReducer(state, action) {
       return { ...state, currentER: Math.min(state.maxER, state.currentER + action.amount) };
     case 'PASSIVE_REGEN':
       return { ...state, currentER: Math.min(state.maxER, state.currentER + 1) };
+    case 'HEAL':
+      return { ...state, hp: Math.min(state.maxHp, state.hp + action.amount) };
     case 'TOGGLE_AI':
       return { ...state, aiEnabled: !state.aiEnabled };
     case 'SET_DEFENSE':
