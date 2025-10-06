@@ -11,8 +11,6 @@ import {
   WEAPONS,
   WEAPON_TAGS,
   ELEMENT_DESCRIPTIONS,
-  LANE_STYLES,
-  WEAPONS,
   initialCharacter,
   initialEnemy
 } from './constants.js';
