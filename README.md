@@ -66,6 +66,11 @@ npm run build
 
 Commit the generated `docs/demo/` contents and configure the repository to publish from the **docs/** folder. The hosted sandbox will be served from `https://<your-user>.github.io/WWComSan/demo/` alongside the existing Markdown documentation.
 
+```bash
+git add -A docs/demo
+git commit -m "Rebuild Pages demo"
+```
+
 ## Playing the sandbox
 
 * **Build Lab (left column):** adjust quick resonance presets, pick one of the 23 weapon types, and tweak every attribute/element slider to explore how resonance values shift. The live resonance panel surfaces thresholds for Bonded and Merged abilities so you know when higher tier skills unlock.
