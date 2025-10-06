@@ -6,11 +6,11 @@ import {
   ATTRIBUTE_DESCRIPTIONS,
   COMBAT_STATES,
   ELEMENTS,
+  LANE_STYLES,
   LANE_RULES,
+  WEAPONS,
   WEAPON_TAGS,
   ELEMENT_DESCRIPTIONS,
-  LANE_STYLES,
-  WEAPONS,
   initialCharacter,
   initialEnemy
 } from './constants.js';
