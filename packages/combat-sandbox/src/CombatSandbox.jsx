@@ -132,19 +132,48 @@ export function CombatSandbox({
     if (!enemy.aiEnabled || combatState.state !== COMBAT_STATES.IDLE || character.hp <= 0 || enemy.hp <= 0) return;
 
     const timer = setTimeout(() => {
-      const affordable = ABILITIES.filter((a) => {
-        const rules = LANE_RULES[a.variant] || { softMin: 0.3 };
-        const compatScore = computeCompatibility(enemy.weapon, a);
-        if (compatScore < (rules.softMin ?? 0)) {
-          return false;
+      const laneAllowance = Object.fromEntries(
+        Object.entries(LANE_RULES).map(([laneVariant, rule]) => [laneVariant, rule.offKitSlots ?? 0])
+      );
+      const enemyWeaponTags = WEAPON_TAGS[enemy.weapon] || [];
+      const affordable = [];
+
+      ABILITIES.forEach((ability) => {
+        const rules = LANE_RULES[ability.variant] || { softMin: 0.3, minCompat: 0.3, offKitSlots: 0, universalTags: [] };
+        const compatScore = computeCompatibility(enemy.weapon, ability);
+        const hasUniversal = (rules.universalTags || []).some(
+          (tag) => enemyWeaponTags.includes(tag) || (ability.kit?.requiredTags || []).includes(tag)
+        );
+        const minCompat = rules.minCompat ?? 0;
+        const softMin = rules.softMin ?? 0;
+
+        let qualifies = false;
+        let usedOffKit = false;
+
+        if (hasUniversal || compatScore >= minCompat) {
+          qualifies = true;
+        } else if (compatScore >= softMin) {
+          const remaining = laneAllowance[ability.variant] ?? 0;
+          if (remaining > 0) {
+            laneAllowance[ability.variant] = remaining - 1;
+            qualifies = true;
+            usedOffKit = true;
+          }
         }
 
-        const costCheck = calculateERCost(a, enemy);
-        if (costCheck.crossover?.tier === 'Blocked') {
-          return false;
+        if (!qualifies) {
+          return;
         }
 
-        return costCheck.finalCost <= enemy.currentER;
+        const costCheck = calculateERCost(ability, enemy);
+        if (costCheck.crossover?.tier === 'Blocked' || costCheck.finalCost > enemy.currentER) {
+          if (usedOffKit) {
+            laneAllowance[ability.variant] = (laneAllowance[ability.variant] ?? 0) + 1;
+          }
+          return;
+        }
+
+        affordable.push(ability);
       });
       if (affordable.length === 0) return;
 
@@ -295,6 +324,13 @@ export function CombatSandbox({
 
   const getAbility = (id) => ABILITIES.find((a) => a.id === id);
 
+  const laneAbilityData = Object.fromEntries(
+    Object.entries(laneVariantLookup).map(([laneKey, variant]) => [
+      variant,
+      getRelevantAbilities(variant, selectedAbilities[laneKey])
+    ])
+  );
+
   const getTopResonances = () => {
     const allResonances = ELEMENTS.map((elem) => {
       const resonances = ATTRIBUTES.map((attr) => ({
@@ -324,13 +360,20 @@ export function CombatSandbox({
     return 'Base';
   };
 
-  const getRelevantAbilities = (variant) => {
+  const laneVariantLookup = {
+    attack: 'Attack',
+    defense: 'Defense',
+    control: 'Control',
+    special: 'Special'
+  };
+
+  const getRelevantAbilities = (variant, selectedId) => {
     const topResonances = getTopResonances();
     const highestTier = getHighestResonanceTier();
     const rules = LANE_RULES[variant] || { softMin: 0 };
     const weaponTags = WEAPON_TAGS[character.weapon] || [];
 
-    const relevant = ABILITIES.filter((a) => {
+    const candidates = ABILITIES.filter((a) => {
       if (a.variant !== variant) return false;
 
       if (a.requiresResonance) {
@@ -352,28 +395,75 @@ export function CombatSandbox({
       }
 
       return true;
+    })
+      .map((ability) => {
+        const compatScore = computeCompatibility(character.weapon, ability);
+        const hasUniversal = (rules.universalTags || []).some(
+          (tag) => weaponTags.includes(tag) || (ability.kit?.requiredTags || []).includes(tag)
+        );
+        return {
+          ability,
+          compatScore,
+          compatTier: getCrossoverTier(compatScore),
+          hasUniversal,
+          elemIndex: topResonances.findIndex((r) => r.elem === ability.governingElem)
+        };
+      })
+      .sort((a, b) => {
+        const compatDiff = b.compatScore - a.compatScore;
+        if (Math.abs(compatDiff) > 0.001) {
+          return compatDiff;
+        }
+        return a.elemIndex - b.elemIndex;
+      });
+
+    const selectedIndex = selectedId
+      ? candidates.findIndex((entry) => entry.ability.id === selectedId)
+      : -1;
+    if (selectedIndex > 0) {
+      const [selectedEntry] = candidates.splice(selectedIndex, 1);
+      candidates.unshift(selectedEntry);
+    }
+
+    const offKitSlots = rules.offKitSlots ?? 0;
+    let offKitRemaining = offKitSlots;
+    let offKitUsed = 0;
+    const abilities = [];
+
+    candidates.forEach((entry) => {
+      const { ability, compatScore, hasUniversal } = entry;
+      const minCompat = rules.minCompat ?? 0;
+      const softMin = rules.softMin ?? 0;
+
+      if (hasUniversal || compatScore >= minCompat) {
+        abilities.push({ ...entry, isOffKit: false, isUniversal: hasUniversal });
+        return;
+      }
+
+      if (compatScore >= softMin && offKitRemaining > 0) {
+        abilities.push({ ...entry, isOffKit: true, isUniversal: false });
+        offKitRemaining -= 1;
+        offKitUsed += 1;
+      }
     });
 
-    return relevant.sort((a, b) => {
-      const compatDiff = computeCompatibility(character.weapon, b) - computeCompatibility(character.weapon, a);
-      if (Math.abs(compatDiff) > 0.001) {
-        return compatDiff;
-      }
-      const aElemIndex = topResonances.findIndex((r) => r.elem === a.governingElem);
-      const bElemIndex = topResonances.findIndex((r) => r.elem === b.governingElem);
-      return aElemIndex - bElemIndex;
-    });
+    return {
+      abilities,
+      offKitSlots,
+      offKitRemaining,
+      offKitUsed
+    };
   };
 
-  const isAbilityRecommended = (ability) => {
+  const isAbilityRecommended = (ability, { variant = ability.variant, compatScore } = {}) => {
     const topResonances = getTopResonances().slice(0, 2);
     const matchesTopElement = topResonances.some((r) => r.elem === ability.governingElem);
 
     if (!matchesTopElement) return false;
 
-    const rules = LANE_RULES[ability.variant] || { minCompat: 0 };
-    const compatScore = computeCompatibility(character.weapon, ability);
-    if (compatScore < (rules.minCompat ?? 0)) {
+    const rules = LANE_RULES[variant] || { minCompat: 0 };
+    const score = compatScore ?? computeCompatibility(character.weapon, ability);
+    if (score < (rules.minCompat ?? 0)) {
       return false;
     }
 
@@ -705,8 +795,9 @@ export function CombatSandbox({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2 mb-3">
               {['attack', 'defense', 'control', 'special'].map((lane) => {
-                const variant = lane === 'attack' ? 'Attack' : lane === 'defense' ? 'Defense' : lane === 'control' ? 'Control' : 'Special';
-                const relevantAbilities = getRelevantAbilities(variant);
+                const variant = laneVariantLookup[lane];
+                const laneInfo = laneAbilityData[variant];
+                const relevantAbilities = laneInfo.abilities;
 
                 return (
                   <div key={lane}>
@@ -715,20 +806,26 @@ export function CombatSandbox({
                       onChange={(e) => setSelectedAbilities((prev) => ({ ...prev, [lane]: e.target.value }))}
                       className="w-full bg-gray-700 text-white text-xs rounded px-2 py-1"
                     >
-                      {relevantAbilities.map((a) => {
-                        const recommended = isAbilityRecommended(a);
-                        const compatScore = computeCompatibility(character.weapon, a);
-                        const compatTier = getCrossoverTier(compatScore);
+                      {relevantAbilities.map(({ ability: optionAbility, compatScore, compatTier, isOffKit, isUniversal }) => {
+                        const recommended = isAbilityRecommended(optionAbility, { variant, compatScore });
                         return (
-                          <option key={a.id} value={a.id}>
+                          <option key={optionAbility.id} value={optionAbility.id}>
                             {recommended ? '⭐ ' : ''}
-                            {a.name} ({compatTier})
+                            {optionAbility.name} ({compatTier})
+                            {isOffKit ? ' • Off-kit' : ''}
+                            {isUniversal ? ' • Universal' : ''}
                           </option>
                         );
                       })}
                     </select>
                     <div className="text-xs text-gray-500 mt-1">
                       {relevantAbilities.length} / {ABILITIES.filter((ab) => ab.variant === variant).length}
+                      {laneInfo.offKitSlots > 0 && (
+                        <>
+                          {' '}
+                          · Off-kit {laneInfo.offKitSlots - laneInfo.offKitRemaining}/{laneInfo.offKitSlots}
+                        </>
+                      )}
                     </div>
                   </div>
                 );
@@ -737,15 +834,16 @@ export function CombatSandbox({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
               {[
-                { ability: getAbility(selectedAbilities.attack), lane: 'A' },
-                { ability: getAbility(selectedAbilities.defense), lane: 'D' },
-                { ability: getAbility(selectedAbilities.control), lane: 'C' },
-                { ability: getAbility(selectedAbilities.special), lane: 'S' }
-              ].map(({ ability, lane }) => {
+                { ability: getAbility(selectedAbilities.attack), lane: 'A', variant: laneVariantLookup.attack },
+                { ability: getAbility(selectedAbilities.defense), lane: 'D', variant: laneVariantLookup.defense },
+                { ability: getAbility(selectedAbilities.control), lane: 'C', variant: laneVariantLookup.control },
+                { ability: getAbility(selectedAbilities.special), lane: 'S', variant: laneVariantLookup.special }
+              ].map(({ ability, lane, variant }) => {
                 if (!ability) return null;
                 const cost = calculateERCost(ability, character);
                 const compatScore = cost.crossover?.score ?? computeCompatibility(character.weapon, ability);
                 const compatTier = cost.crossover?.tier ?? getCrossoverTier(compatScore);
+                const abilityMeta = laneAbilityData[variant]?.abilities.find((entry) => entry.ability.id === ability.id);
                 const penalty = cost.crossover?.penalty;
                 const canAfford = Number.isFinite(cost.finalCost) && character.currentER >= cost.finalCost;
                 const meetsResonance = !ability.requiresResonance || cost.resonance >= ability.requiresResonance;
@@ -809,7 +907,10 @@ export function CombatSandbox({
                     </div>
                     <div className="text-xs font-bold mb-1 text-gray-400">{lane}</div>
                     <div className="text-sm font-bold mb-1">{ability.name}</div>
-                    {isAbilityRecommended(ability) && <div className="text-xs text-yellow-400 mb-1">⭐ Recommended</div>}
+                    {abilityMeta?.isOffKit && <div className="text-xs text-orange-400 mb-1">Off-kit slot</div>}
+                    {isAbilityRecommended(ability, { variant, compatScore }) && (
+                      <div className="text-xs text-yellow-400 mb-1">⭐ Recommended</div>
+                    )}
                     <div className={`text-2xl font-bold ${canAfford ? 'text-cyan-400' : 'text-red-400'}`}>
                       {Number.isFinite(cost.finalCost) ? cost.finalCost.toFixed(1) : '—'}
                     </div>
