@@ -10,7 +10,8 @@ const baseCharacter = {
     SPR: 80,
     CHA: 50,
     TOU: 0,
-    AGI: 0
+    AGI: 0,
+    Impact: 40
   },
   elements: {
     Fire: 90,
@@ -36,7 +37,7 @@ describe('calculateDamage', () => {
 
     const damage = calculateDamage(ability, character);
 
-    expect(damage).toBe(381);
+    expect(damage).toBe(412);
   });
 });
 

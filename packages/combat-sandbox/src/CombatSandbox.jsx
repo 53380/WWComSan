@@ -3,6 +3,7 @@ import { Swords, Target, Activity, Settings } from 'lucide-react';
 import {
   ABILITIES,
   ATTRIBUTES,
+  ATTRIBUTE_DESCRIPTIONS,
   COMBAT_STATES,
   ELEMENTS,
   LANE_STYLES,
@@ -512,6 +513,11 @@ export function CombatSandbox({
                 onChange={(e) => dispatchCharacter({ type: 'SET_ATTRIBUTE', attr, value: parseInt(e.target.value, 10) })}
                 className="w-full h-2 rounded"
               />
+              {ATTRIBUTE_DESCRIPTIONS[attr] ? (
+                <p className="mt-1 text-[10px] leading-tight text-gray-400">
+                  {ATTRIBUTE_DESCRIPTIONS[attr]}
+                </p>
+              ) : null}
             </div>
           ))}
 

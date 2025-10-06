@@ -6,7 +6,7 @@ const baseCharacterState = {
   maxHp: 200,
   currentER: 50,
   maxER: 100,
-  attributes: { STR: 20, DEX: 20, INS: 20, SPR: 20, CHA: 20, TOU: 50, AGI: 20 },
+  attributes: { STR: 20, DEX: 20, INS: 20, SPR: 20, CHA: 20, TOU: 50, AGI: 20, Impact: 15 },
   elements: { Fire: 20, Water: 20 },
   weapon: 'Long Swords',
   activeDefense: null,

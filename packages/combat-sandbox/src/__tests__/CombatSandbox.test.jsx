@@ -52,7 +52,7 @@ describe('CombatSandbox component', () => {
     });
 
     expect(await screen.findByText('Echo Pierce heals for 133 HP')).toBeInTheDocument();
-    expect(await screen.findByText('Echo Pierce hits for 11 damage')).toBeInTheDocument();
+    expect(await screen.findByText('Echo Pierce hits for 12 damage')).toBeInTheDocument();
     expect(await screen.findByText('+4 ER')).toBeInTheDocument();
   });
 });

@@ -92,12 +92,13 @@ export const calculateDamage = (ability, character) => {
   const strMod = 1 + ((character.attributes.STR || 0) / 100) * 0.5;
   const dexMod = 1 + ((character.attributes.DEX || 0) / 100) * 0.3;
   const insMod = 1 + ((character.attributes.INS || 0) / 100) * 0.4;
+  const impactMod = 1 + ((character.attributes.Impact || 0) / 100) * 0.2;
 
   let finalMod = 1 + attrValue / 100;
   if (ability.variant === 'Attack') {
-    finalMod *= (strMod * 0.4 + dexMod * 0.3 + insMod * 0.3);
+    finalMod *= (strMod * 0.4 + dexMod * 0.3 + insMod * 0.3) * impactMod;
   } else if (ability.variant === 'Special') {
-    finalMod *= (insMod * 0.5 + strMod * 0.3 + dexMod * 0.2);
+    finalMod *= (insMod * 0.5 + strMod * 0.3 + dexMod * 0.2) * (1 + ((character.attributes.Impact || 0) / 100) * 0.1);
   }
 
   const baseDamage = ability.baseDamage ?? 10;
