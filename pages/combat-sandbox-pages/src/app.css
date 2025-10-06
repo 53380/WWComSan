@@ -1,0 +1,74 @@
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: radial-gradient(circle at top, #1e293b 0%, #0f172a 55%, #020617 100%);
+  color: #e2e8f0;
+}
+
+.app-header {
+  padding: 2.5rem 1.5rem 1.5rem;
+  text-align: center;
+}
+
+.app-header h1 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  margin-bottom: 0.75rem;
+  font-weight: 700;
+}
+
+.app-header p {
+  max-width: 720px;
+  margin: 0.5rem auto;
+  line-height: 1.6;
+}
+
+.app-links {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 600;
+}
+
+.app-links a {
+  color: #38bdf8;
+  text-decoration: none;
+}
+
+.app-links a:hover,
+.app-links a:focus {
+  text-decoration: underline;
+}
+
+.sandbox-wrapper {
+  flex: 1 1 auto;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+}
+
+.sandbox-wrapper > * {
+  width: 100%;
+  max-width: 1440px;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.75);
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.app-footer {
+  padding: 1.5rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: #94a3b8;
+}
+
+@media (max-width: 768px) {
+  .sandbox-wrapper {
+    padding: 1rem 0.5rem 2rem;
+  }
+
+  .sandbox-wrapper > * {
+    border-radius: 0;
+  }
+}

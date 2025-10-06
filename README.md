@@ -54,6 +54,18 @@ Vite prints a local URL (typically <http://localhost:5173>) – open it in a bro
 
 > **Tip:** If you want to iterate on the component itself, keep the host running and edit the files under `packages/combat-sandbox/`. Vite will hot reload the changes.
 
+## Publish the sandbox to GitHub Pages
+
+The repository now includes a ready-to-ship Vite host under `pages/combat-sandbox-pages/`. It links to the local package via a `file:` dependency, applies the correct base path for project Pages deployments, and emits its production build to `docs/demo/` so that GitHub Pages can pick it up.
+
+```bash
+cd pages/combat-sandbox-pages
+npm install
+npm run build
+```
+
+Commit the generated `docs/demo/` contents and configure the repository to publish from the **docs/** folder. The hosted sandbox will be served from `https://<your-user>.github.io/WWComSan/demo/` alongside the existing Markdown documentation.
+
 ## Playing the sandbox
 
 * **Build Lab (left column):** adjust quick resonance presets, pick one of the 23 weapon types, and tweak every attribute/element slider to explore how resonance values shift. The live resonance panel surfaces thresholds for Bonded and Merged abilities so you know when higher tier skills unlock.

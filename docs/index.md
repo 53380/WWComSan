@@ -1,6 +1,6 @@
 # Worlds Within Combat Sandbox
 
-This GitHub Pages site renders the Markdown documentation for the combat sandbox package. The playable demo itself is delivered as a React component, so the published site is informational rather than a standalone HTML build of the experience.
+This GitHub Pages site renders the Markdown documentation for the combat sandbox package. The playable demo itself is delivered as a React component and is now bundled through the Vite host that lives under `docs/demo/`.
 
 ## What ships on Pages?
 
@@ -36,4 +36,4 @@ The repository exports the `@tba-worldswithin/combat-sandbox` package. Consumers
 
 ## Need a hosted build?
 
-To give non-developers a one-click playtest environment, deploy a small host app (for example the Vite setup above) and publish its production build to Pages. That build will produce the necessary `index.html` and asset files, while this repository continues to track documentation as Markdown.
+A preconfigured Vite host lives at [`pages/combat-sandbox-pages/`](../pages/combat-sandbox-pages/README.md). Running `npm run build` from that directory emits its production bundle to `docs/demo/` so GitHub Pages can serve the interactive sandbox alongside these docs. Point interested playtesters to `https://<your-user>.github.io/WWComSan/demo/` after publishing.
