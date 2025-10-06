@@ -17,7 +17,9 @@ import {
   calculateERCost,
   calculateResonance,
   getResonanceTier,
-  resolveCombatPhase
+  resolveCombatPhase,
+  getTimestamp,
+  rollDodge
 } from './utils.js';
 
 const MAX_LOG_ENTRIES = 20;
@@ -92,10 +94,11 @@ export function CombatSandbox({
 
   useEffect(() => {
     const interval = setInterval(() => {
+      const currentTime = getTimestamp();
       dispatchCharacter({ type: 'PASSIVE_REGEN' });
       dispatchEnemy({ type: 'PASSIVE_REGEN' });
-      dispatchCharacter({ type: 'UPDATE_CC' });
-      dispatchEnemy({ type: 'UPDATE_CC' });
+      dispatchCharacter({ type: 'UPDATE_CC', currentTime });
+      dispatchEnemy({ type: 'UPDATE_CC', currentTime });
     }, 1000);
     return () => clearInterval(interval);
   }, []);
@@ -131,8 +134,23 @@ export function CombatSandbox({
       addLog(`Enemy: ${ability.name}`, 'info');
 
       const dmg = calculateDamage(ability, enemy);
-      dispatchCharacter({ type: 'TAKE_DAMAGE', amount: dmg });
-      addLog(`Enemy hits for ${dmg} damage`, 'damage');
+      const dodgeTimestamp = getTimestamp();
+      const didDodge = rollDodge(character.attributes.AGI);
+      const dodgeErGain = 4;
+      const erOnHit = 1;
+      dispatchCharacter({
+        type: 'TAKE_DAMAGE',
+        amount: dmg,
+        didDodge,
+        dodgeTimestamp: didDodge ? dodgeTimestamp : undefined,
+        dodgeErGain,
+        erOnHit
+      });
+      if (didDodge) {
+        addLog(`Enemy attack dodged! +${dodgeErGain} ER`, 'er');
+      } else {
+        addLog(`Enemy hits for ${dmg} damage`, 'damage');
+      }
 
       if (ability.variant === 'Attack') {
         dispatchEnemy({ type: 'GAIN_ER', amount: WEAPONS[enemy.weapon].erGainedOnHit || 2 });
@@ -169,7 +187,7 @@ export function CombatSandbox({
     dispatchCharacter({ type: 'SPEND_ER', amount: cost.finalCost });
     addLog(`Casting ${ability.name} (-${cost.finalCost.toFixed(1)} ER)`, 'cast');
 
-    setCombatState({ state: COMBAT_STATES.WIND_UP, ability, progress: 0, startTime: Date.now() });
+    setCombatState({ state: COMBAT_STATES.WIND_UP, ability, progress: 0, startTime: getTimestamp() });
   };
 
   const handleCancel = () => {
@@ -186,7 +204,7 @@ export function CombatSandbox({
   const handlePerfectTiming = () => {
     if (!perfectTimingWindow) return;
 
-    const now = Date.now();
+    const now = getTimestamp();
     const elapsed = now - perfectTimingWindow.startTime;
 
     if (elapsed <= perfectTimingWindow.duration) {

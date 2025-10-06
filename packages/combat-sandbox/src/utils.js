@@ -1,5 +1,23 @@
 import { WEAPONS, COMBAT_STATES } from './constants.js';
 
+export const getTimestamp = () => Date.now();
+
+export const rollDodge = (agiValue, rng = Math.random) => {
+  const agiDodgeChance = (agiValue / 100) * 0.15;
+  return rng() < agiDodgeChance;
+};
+
+export const createCcEffect = ({ ccType, duration, timestamp = getTimestamp() }) => {
+  const cappedDuration = Math.min(duration, 2.0);
+
+  return {
+    type: ccType,
+    duration: cappedDuration,
+    applied: timestamp,
+    expiresAt: timestamp + cappedDuration * 1000
+  };
+};
+
 export const calculateResonance = (attrValue, elemValue) => (attrValue / 100) * (elemValue / 100);
 
 export const getAttributeTierDiscount = (value) => {
@@ -107,7 +125,8 @@ export const resolveCombatPhase = ({
 
   const timing = calculateAnimationTiming(character.weapon, character.attributes.AGI);
   const phaseDuration = combatState.state === COMBAT_STATES.WIND_UP ? timing.windUp : timing.recovery;
-  const elapsed = (Date.now() - combatState.startTime) / 1000;
+  const frameTimestamp = getTimestamp();
+  const elapsed = (frameTimestamp - combatState.startTime) / 1000;
   const progress = Math.min(elapsed / phaseDuration, 1);
 
   setCombatState((prev) => ({ ...prev, progress }));
@@ -138,7 +157,7 @@ export const resolveCombatPhase = ({
         dispatchCharacter({ type: 'SET_DEFENSE', defense: ability });
         const perfectWindow = ability.perfectWindow || 0.3;
         setPerfectTimingWindow({
-          startTime: Date.now(),
+          startTime: frameTimestamp,
           duration: perfectWindow * 1000,
           ability
         });
@@ -157,18 +176,21 @@ export const resolveCombatPhase = ({
         }, ability.duration || 2000);
       } else if (ability.variant === 'Control') {
         if (ability.ccDuration && ability.ccType) {
-          const cappedDuration = Math.min(ability.ccDuration, 2.0);
-          dispatchEnemy({ type: 'ADD_CC', ccType: ability.ccType, duration: cappedDuration });
-          addLog(`Applied ${ability.ccType} (${cappedDuration}s, capped at 2.0s)`, 'info');
+          const ccEffect = createCcEffect({
+            ccType: ability.ccType,
+            duration: ability.ccDuration,
+            timestamp: frameTimestamp
+          });
+          dispatchEnemy({ type: 'ADD_CC', ccEffect });
+          addLog(`Applied ${ability.ccType} (${ccEffect.duration}s, capped at 2.0s)`, 'info');
 
-          const now = Date.now();
           const lastSuccess = ccSuccessTimestamps[ability.id] || 0;
-          const timeSinceLastSuccess = (now - lastSuccess) / 1000;
+          const timeSinceLastSuccess = (frameTimestamp - lastSuccess) / 1000;
 
           if (timeSinceLastSuccess >= 2.0) {
             dispatchCharacter({ type: 'GAIN_ER', amount: 1 });
             addLog('CC success! +1 ER (2s gate passed)', 'er');
-            setCcSuccessTimestamps((prev) => ({ ...prev, [ability.id]: now }));
+            setCcSuccessTimestamps((prev) => ({ ...prev, [ability.id]: frameTimestamp }));
           } else {
             addLog(`CC applied (ER gain on cooldown: ${(2.0 - timeSinceLastSuccess).toFixed(1)}s)`, 'info');
           }
@@ -176,7 +198,7 @@ export const resolveCombatPhase = ({
       }
     }
 
-    setCombatState({ state: COMBAT_STATES.RECOVERY, ability, progress: 0, startTime: Date.now() });
+    setCombatState({ state: COMBAT_STATES.RECOVERY, ability, progress: 0, startTime: frameTimestamp });
   } else {
     setCombatState({ state: COMBAT_STATES.IDLE, ability: null, progress: 0, startTime: 0 });
   }
