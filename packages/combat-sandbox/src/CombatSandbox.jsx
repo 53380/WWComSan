@@ -85,6 +85,8 @@ export function CombatSandbox({
   const [perfectTimingWindow, setPerfectTimingWindow] = useState(null);
   const [ccSuccessTimestamps, setCcSuccessTimestamps] = useState({});
   const [showAllResonances, setShowAllResonances] = useState(false);
+  const playerDefenseTimeoutRef = useRef(null);
+  const enemyDefenseTimeoutRef = useRef(null);
 
   const { log: combatLog, addLog, clear: clearLog } = useCombatLog();
 
@@ -109,7 +111,8 @@ export function CombatSandbox({
         addLog,
         setPerfectTimingWindow,
         ccSuccessTimestamps,
-        setCcSuccessTimestamps
+        setCcSuccessTimestamps,
+        defenseTimeoutRef: playerDefenseTimeoutRef
       }),
     combatState.state !== COMBAT_STATES.IDLE
   );
@@ -135,11 +138,23 @@ export function CombatSandbox({
         dispatchEnemy({ type: 'GAIN_ER', amount: WEAPONS[enemy.weapon].erGainedOnHit || 2 });
       } else if (ability.variant === 'Defense') {
         dispatchEnemy({ type: 'SET_DEFENSE', defense: ability });
-        setTimeout(() => dispatchEnemy({ type: 'CLEAR_DEFENSE' }), ability.duration || 2000);
+        if (enemyDefenseTimeoutRef.current) {
+          clearTimeout(enemyDefenseTimeoutRef.current);
+        }
+        enemyDefenseTimeoutRef.current = setTimeout(() => {
+          dispatchEnemy({ type: 'CLEAR_DEFENSE' });
+          enemyDefenseTimeoutRef.current = null;
+        }, ability.duration || 2000);
       }
     }, 1500 + Math.random() * 1000);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      if (enemyDefenseTimeoutRef.current) {
+        clearTimeout(enemyDefenseTimeoutRef.current);
+        enemyDefenseTimeoutRef.current = null;
+      }
+    };
   }, [enemy.aiEnabled, enemy.currentER, combatState.state, character.hp, enemy.hp]);
 
   const handleCast = (ability) => {
@@ -188,8 +203,30 @@ export function CombatSandbox({
     dispatchEnemy({ type: 'RESET' });
     clearLog();
     setCombatState({ state: COMBAT_STATES.IDLE, ability: null, progress: 0, startTime: 0 });
+    if (playerDefenseTimeoutRef.current) {
+      clearTimeout(playerDefenseTimeoutRef.current);
+      playerDefenseTimeoutRef.current = null;
+    }
+    if (enemyDefenseTimeoutRef.current) {
+      clearTimeout(enemyDefenseTimeoutRef.current);
+      enemyDefenseTimeoutRef.current = null;
+    }
     addLog('Combat reset', 'info');
   };
+
+  useEffect(
+    () => () => {
+      if (playerDefenseTimeoutRef.current) {
+        clearTimeout(playerDefenseTimeoutRef.current);
+        playerDefenseTimeoutRef.current = null;
+      }
+      if (enemyDefenseTimeoutRef.current) {
+        clearTimeout(enemyDefenseTimeoutRef.current);
+        enemyDefenseTimeoutRef.current = null;
+      }
+    },
+    []
+  );
 
   const getAbility = (id) => ABILITIES.find((a) => a.id === id);
 

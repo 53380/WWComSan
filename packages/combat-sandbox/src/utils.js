@@ -98,7 +98,8 @@ export const resolveCombatPhase = ({
   addLog,
   setPerfectTimingWindow,
   ccSuccessTimestamps,
-  setCcSuccessTimestamps
+  setCcSuccessTimestamps,
+  defenseTimeoutRef
 }) => {
   if (combatState.state === COMBAT_STATES.IDLE) {
     return;
@@ -144,10 +145,15 @@ export const resolveCombatPhase = ({
 
         addLog(`Defense active! ${perfectWindow.toFixed(1)}s perfect window`, 'info');
 
-        setTimeout(() => {
+        if (defenseTimeoutRef?.current) {
+          clearTimeout(defenseTimeoutRef.current);
+        }
+
+        defenseTimeoutRef.current = setTimeout(() => {
           setPerfectTimingWindow(null);
           dispatchCharacter({ type: 'CLEAR_DEFENSE' });
           addLog('Defense ended', 'info');
+          defenseTimeoutRef.current = null;
         }, ability.duration || 2000);
       } else if (ability.variant === 'Control') {
         if (ability.ccDuration && ability.ccType) {
