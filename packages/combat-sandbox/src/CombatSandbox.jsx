@@ -10,6 +10,7 @@ import {
   LANE_RULES,
   WEAPONS,
   WEAPON_TAGS,
+  ELEMENT_DESCRIPTIONS,
   initialCharacter,
   initialEnemy
 } from './constants.js';
@@ -482,42 +483,6 @@ export function CombatSandbox({
             Build Lab
           </h2>
 
-          <div className="mb-3 p-2 bg-purple-900 bg-opacity-30 rounded border border-purple-600">
-            <div className="text-xs font-semibold text-purple-300 mb-2">Quick Resonance Presets</div>
-            <div className="grid grid-cols-3 gap-1">
-              <button
-                type="button"
-                onClick={() => {
-                  dispatchCharacter({ type: 'SET_ATTRIBUTE', attr: 'STR', value: 50 });
-                  dispatchCharacter({ type: 'SET_ELEMENT', elem: 'Fire', value: 50 });
-                }}
-                className="px-2 py-1 bg-gray-700 hover:bg-gray-600 rounded text-xs"
-              >
-                STR×Fire 0.25
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  dispatchCharacter({ type: 'SET_ATTRIBUTE', attr: 'STR', value: 71 });
-                  dispatchCharacter({ type: 'SET_ELEMENT', elem: 'Fire', value: 71 });
-                }}
-                className="px-2 py-1 bg-purple-700 hover:bg-purple-600 rounded text-xs"
-              >
-                Bonded 0.50
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  dispatchCharacter({ type: 'SET_ATTRIBUTE', attr: 'STR', value: 90 });
-                  dispatchCharacter({ type: 'SET_ELEMENT', elem: 'Fire', value: 90 });
-                }}
-                className="px-2 py-1 bg-yellow-700 hover:bg-yellow-600 rounded text-xs"
-              >
-                Merged 0.81
-              </button>
-            </div>
-          </div>
-
           <div className="mb-3">
             <label className="text-xs font-semibold mb-1 block">Weapon</label>
             <select
@@ -552,45 +517,72 @@ export function CombatSandbox({
           </div>
 
           <h3 className="text-xs font-bold mb-2 mt-4 text-orange-400">Attributes</h3>
-          {ATTRIBUTES.map((attr) => (
-            <div key={attr} className="mb-2">
-              <div className="flex justify-between mb-1">
-                <label className="text-xs">{attr}</label>
-                <span className="text-xs font-bold">{character.attributes[attr]}</span>
+          {ATTRIBUTES.map((attr) => {
+            const description = ATTRIBUTE_DESCRIPTIONS[attr];
+            const inputId = `attribute-${attr.toLowerCase()}`;
+            const descriptionId = description ? `${inputId}-description` : undefined;
+
+            return (
+              <div key={attr} className="mb-2">
+                <div className="flex justify-between mb-1">
+                  <label className="text-xs font-semibold" htmlFor={inputId} title={description}>
+                    {attr}
+                  </label>
+                  <span className="text-xs font-bold">{character.attributes[attr]}</span>
+                </div>
+                <input
+                  id={inputId}
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={character.attributes[attr]}
+                  onChange={(e) =>
+                    dispatchCharacter({ type: 'SET_ATTRIBUTE', attr, value: parseInt(e.target.value, 10) })
+                  }
+                  className="w-full h-2 rounded"
+                  aria-describedby={descriptionId}
+                />
+                {description ? (
+                  <p id={descriptionId} className="mt-1 text-xs text-gray-300 italic opacity-80">
+                    {description}
+                  </p>
+                ) : null}
               </div>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={character.attributes[attr]}
-                onChange={(e) => dispatchCharacter({ type: 'SET_ATTRIBUTE', attr, value: parseInt(e.target.value, 10) })}
-                className="w-full h-2 rounded"
-              />
-              {ATTRIBUTE_DESCRIPTIONS[attr] ? (
-                <p className="mt-1 text-[10px] leading-tight text-gray-400">
-                  {ATTRIBUTE_DESCRIPTIONS[attr]}
-                </p>
-              ) : null}
-            </div>
-          ))}
+            );
+          })}
 
           <h3 className="text-xs font-bold mb-2 mt-4 text-purple-400">Elements</h3>
-          {ELEMENTS.map((elem) => (
-            <div key={elem} className="mb-2">
-              <div className="flex justify-between mb-1">
-                <label className="text-xs">{elem}</label>
-                <span className="text-xs font-bold">{character.elements[elem]}</span>
+          {ELEMENTS.map((elem) => {
+            const description = ELEMENT_DESCRIPTIONS[elem];
+            const inputId = `element-${elem.toLowerCase()}`;
+            const descriptionId = description ? `${inputId}-description` : undefined;
+
+            return (
+              <div key={elem} className="mb-2">
+                <div className="flex justify-between mb-1">
+                  <label className="text-xs font-semibold" htmlFor={inputId} title={description}>
+                    {elem}
+                  </label>
+                  <span className="text-xs font-bold">{character.elements[elem]}</span>
+                </div>
+                <input
+                  id={inputId}
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={character.elements[elem]}
+                  onChange={(e) => dispatchCharacter({ type: 'SET_ELEMENT', elem, value: parseInt(e.target.value, 10) })}
+                  className="w-full h-1.5 rounded"
+                  aria-describedby={descriptionId}
+                />
+                {description ? (
+                  <p id={descriptionId} className="mt-1 text-xs text-gray-300 italic opacity-80">
+                    {description}
+                  </p>
+                ) : null}
               </div>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={character.elements[elem]}
-                onChange={(e) => dispatchCharacter({ type: 'SET_ELEMENT', elem, value: parseInt(e.target.value, 10) })}
-                className="w-full h-1.5 rounded"
-              />
-            </div>
-          ))}
+            );
+          })}
 
           {renderResonanceDetails()}
         </div>
