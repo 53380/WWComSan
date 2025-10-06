@@ -64,11 +64,14 @@ export const calculateERCost = (ability, character) => {
     (s.reliability || 1) * (s.mobility || 1) * (s.ccCap || 1) *
     (s.reaction || 1) * (s.cooldown || 1) * (s.risk || 1);
 
-  const finalCost = grossCost * (1 - getAttributeTierDiscount(attrValue)) * (1 - getResonanceDiscount(resonance));
+  const attrDiscount = getAttributeTierDiscount(attrValue);
+  const resonanceDiscount = getResonanceDiscount(resonance);
+  const finalCost = grossCost * (1 - attrDiscount) * (1 - resonanceDiscount);
+  const finalCostRounded = Math.round(finalCost * 100) / 100;
 
   return {
     grossCost,
-    finalCost: Math.round(finalCost * 10) / 10,
+    finalCost: Number(finalCostRounded.toFixed(1)),
     resonance,
     resonanceTier: getResonanceTier(resonance)
   };
