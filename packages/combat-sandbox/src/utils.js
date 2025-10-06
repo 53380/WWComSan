@@ -169,8 +169,12 @@ export const resolveCombatPhase = ({
 
     if (ability.variant === 'Attack') {
       const erGain = WEAPONS[character.weapon].erGainedOnHit || 2;
-      dispatchCharacter({ type: 'GAIN_ER', amount: erGain });
-      addLog(`+${erGain} ER`, 'er');
+      const actualErGain = Math.max(
+        0,
+        Math.min(character.maxER - character.currentER, erGain)
+      );
+      dispatchCharacter({ type: 'GAIN_ER', amount: actualErGain });
+      addLog(`+${actualErGain} ER`, 'er');
     } else if (ability.variant === 'Defense') {
       dispatchCharacter({ type: 'SET_DEFENSE', defense: ability });
       const perfectWindow = ability.perfectWindow || 0.3;
@@ -206,8 +210,13 @@ export const resolveCombatPhase = ({
         const timeSinceLastSuccess = (frameTimestamp - lastSuccess) / 1000;
 
         if (timeSinceLastSuccess >= 2.0) {
-          dispatchCharacter({ type: 'GAIN_ER', amount: 1 });
-          addLog('CC success! +1 ER (2s gate passed)', 'er');
+          const intendedErGain = 1;
+          const actualErGain = Math.max(
+            0,
+            Math.min(character.maxER - character.currentER, intendedErGain)
+          );
+          dispatchCharacter({ type: 'GAIN_ER', amount: actualErGain });
+          addLog(`CC success! +${actualErGain} ER (2s gate passed)`, 'er');
           setCcSuccessTimestamps((prev) => ({ ...prev, [ability.id]: frameTimestamp }));
         } else {
           addLog(`CC applied (ER gain on cooldown: ${(2.0 - timeSinceLastSuccess).toFixed(1)}s)`, 'info');

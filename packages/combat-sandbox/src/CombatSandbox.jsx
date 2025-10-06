@@ -150,17 +150,21 @@ export function CombatSandbox({
         const dodgeTimestamp = getTimestamp();
         const didDodge = rollDodge(character.attributes.AGI);
         const dodgeErGain = 4;
+        const actualDodgeErGain = Math.max(
+          0,
+          Math.min(character.maxER - character.currentER, dodgeErGain)
+        );
         const erOnHit = 1;
         dispatchCharacter({
           type: 'TAKE_DAMAGE',
           amount: dmg,
           didDodge,
           dodgeTimestamp: didDodge ? dodgeTimestamp : undefined,
-          dodgeErGain,
+          dodgeErGain: actualDodgeErGain,
           erOnHit
         });
         if (didDodge) {
-          addLog(`Enemy attack dodged! +${dodgeErGain} ER`, 'er');
+          addLog(`Enemy attack dodged! +${actualDodgeErGain} ER`, 'er');
         } else {
           addLog(`Enemy hits for ${dmg} damage`, 'damage');
         }
@@ -209,8 +213,9 @@ export function CombatSandbox({
 
     const cost = calculateERCost(combatState.ability, character);
     const refund = cost.finalCost * 0.4;
-    dispatchCharacter({ type: 'GAIN_ER', amount: refund });
-    addLog(`Cancelled! Refunded ${refund.toFixed(1)} ER (40%)`, 'info');
+    const actualRefund = Math.max(0, Math.min(character.maxER - character.currentER, refund));
+    dispatchCharacter({ type: 'GAIN_ER', amount: actualRefund });
+    addLog(`Cancelled! Refunded ${actualRefund.toFixed(1)} ER (40%)`, 'info');
 
     setCombatState({ state: COMBAT_STATES.IDLE, ability: null, progress: 0, startTime: 0 });
   };
@@ -222,8 +227,13 @@ export function CombatSandbox({
     const elapsed = now - perfectTimingWindow.startTime;
 
     if (elapsed <= perfectTimingWindow.duration) {
-      dispatchCharacter({ type: 'GAIN_ER', amount: 4 });
-      addLog('PERFECT PARRY! +4 ER', 'er');
+      const intendedGain = 4;
+      const actualGain = Math.max(
+        0,
+        Math.min(character.maxER - character.currentER, intendedGain)
+      );
+      dispatchCharacter({ type: 'GAIN_ER', amount: actualGain });
+      addLog(`PERFECT PARRY! +${actualGain} ER`, 'er');
       setPerfectTimingWindow(null);
     } else {
       addLog('Too late! Perfect window missed', 'error');
