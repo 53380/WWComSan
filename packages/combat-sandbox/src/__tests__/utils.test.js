@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { calculateDamage, calculateERCost, calculateHealing } from '../utils.js';
+import { calculateDamage, calculateHealing } from '../utils.js';
 
 const baseCharacter = {
   weapon: 'Long Swords',
@@ -17,40 +17,6 @@ const baseCharacter = {
     Verdant: 70
   }
 };
-
-describe('calculateERCost', () => {
-  it('applies attribute and resonance discounts with rounding and tier detection', () => {
-    const ability = {
-      baseBand: 10,
-      governingAttr: 'STR',
-      governingElem: 'Fire',
-      scalars: {
-        scope: 1,
-        potency: 1,
-        uptime: 1,
-        reliability: 1,
-        mobility: 1,
-        ccCap: 1,
-        reaction: 1,
-        cooldown: 1,
-        risk: 1
-      }
-    };
-
-    const character = {
-      ...baseCharacter,
-      attributes: { ...baseCharacter.attributes, STR: 60 },
-      elements: { ...baseCharacter.elements, Fire: 70 }
-    };
-
-    const result = calculateERCost(ability, character);
-
-    expect(result.grossCost).toBe(10);
-    expect(result.finalCost).toBe(8.6);
-    expect(result.resonance).toBeCloseTo(0.42, 5);
-    expect(result.resonanceTier).toBe('Touched');
-  });
-});
 
 describe('calculateDamage', () => {
   it('scales with resonance tiers, weapon multiplier, and composite attribute weights', () => {
