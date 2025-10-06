@@ -6,6 +6,7 @@ import {
   ATTRIBUTE_DESCRIPTIONS,
   COMBAT_STATES,
   ELEMENTS,
+  ELEMENT_DESCRIPTIONS,
   LANE_STYLES,
   WEAPONS,
   initialCharacter,
@@ -439,42 +440,6 @@ export function CombatSandbox({
             Build Lab
           </h2>
 
-          <div className="mb-3 p-2 bg-purple-900 bg-opacity-30 rounded border border-purple-600">
-            <div className="text-xs font-semibold text-purple-300 mb-2">Quick Resonance Presets</div>
-            <div className="grid grid-cols-3 gap-1">
-              <button
-                type="button"
-                onClick={() => {
-                  dispatchCharacter({ type: 'SET_ATTRIBUTE', attr: 'STR', value: 50 });
-                  dispatchCharacter({ type: 'SET_ELEMENT', elem: 'Fire', value: 50 });
-                }}
-                className="px-2 py-1 bg-gray-700 hover:bg-gray-600 rounded text-xs"
-              >
-                STR×Fire 0.25
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  dispatchCharacter({ type: 'SET_ATTRIBUTE', attr: 'STR', value: 71 });
-                  dispatchCharacter({ type: 'SET_ELEMENT', elem: 'Fire', value: 71 });
-                }}
-                className="px-2 py-1 bg-purple-700 hover:bg-purple-600 rounded text-xs"
-              >
-                Bonded 0.50
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  dispatchCharacter({ type: 'SET_ATTRIBUTE', attr: 'STR', value: 90 });
-                  dispatchCharacter({ type: 'SET_ELEMENT', elem: 'Fire', value: 90 });
-                }}
-                className="px-2 py-1 bg-yellow-700 hover:bg-yellow-600 rounded text-xs"
-              >
-                Merged 0.81
-              </button>
-            </div>
-          </div>
-
           <div className="mb-3">
             <label className="text-xs font-semibold mb-1 block">Weapon</label>
             <select
@@ -546,6 +511,11 @@ export function CombatSandbox({
                 onChange={(e) => dispatchCharacter({ type: 'SET_ELEMENT', elem, value: parseInt(e.target.value, 10) })}
                 className="w-full h-1.5 rounded"
               />
+              {ELEMENT_DESCRIPTIONS[elem] ? (
+                <p className="mt-1 text-[10px] leading-tight text-gray-400">
+                  {ELEMENT_DESCRIPTIONS[elem]}
+                </p>
+              ) : null}
             </div>
           ))}
 
