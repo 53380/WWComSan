@@ -9,7 +9,7 @@ export function characterReducer(state, action) {
     case 'SPEND_ER':
       return { ...state, currentER: Math.max(0, state.currentER - action.amount) };
     case 'GAIN_ER':
-      return { ...state, currentER: Math.min(100, state.currentER + action.amount) };
+      return { ...state, currentER: Math.min(state.maxER, state.currentER + action.amount) };
     case 'PASSIVE_REGEN':
       return { ...state, currentER: Math.min(state.maxER, state.currentER + 1) };
     case 'TAKE_DAMAGE': {
@@ -19,7 +19,7 @@ export function characterReducer(state, action) {
 
       if (didDodge) {
         const erGain = action.dodgeErGain ?? 4;
-        const nextEr = Math.min(100, state.currentER + erGain);
+        const nextEr = Math.min(state.maxER, state.currentER + erGain);
         return {
           ...state,
           currentER: nextEr,
@@ -32,7 +32,7 @@ export function characterReducer(state, action) {
       return {
         ...state,
         hp: Math.max(0, state.hp - finalDamage),
-        currentER: Math.min(100, state.currentER + erGain)
+        currentER: Math.min(state.maxER, state.currentER + erGain)
       };
     }
     case 'HEAL':
