@@ -1,5 +1,9 @@
 export const ATTRIBUTES = ['STR', 'DEX', 'TOU', 'AGI', 'SPR', 'INS', 'CHA', 'Impact'];
 
+export const ATTRIBUTE_DESCRIPTIONS = {
+  Impact: 'Boosts the payoff of damage abilities by amplifying the final damage multiplier for Attacks and Specials.'
+};
+
 export const ELEMENTS = ['Fire', 'Water', 'Stone', 'Air', 'Spark', 'Verdant', 'Essence'];
 
 export const WEAPONS = {
