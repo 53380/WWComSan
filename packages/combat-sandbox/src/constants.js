@@ -1,7 +1,24 @@
 export const ATTRIBUTES = ['STR', 'DEX', 'TOU', 'AGI', 'SPR', 'INS', 'CHA', 'Impact'];
 
 export const ATTRIBUTE_DESCRIPTIONS = {
-  Impact: 'Boosts the payoff of damage abilities by amplifying the final damage multiplier for Attacks and Specials.'
+  STR: 'Strength lifts melee damage bonuses from +10% at tier 30 up to +40% at tier 90 and fuels Inferno Wave with Fire.',
+  DEX: 'Dexterity raises crit and off-hand reliability, peaking at +14% crit to spark Chain-Jump style reactions.',
+  TOU: 'Toughness adds flat physical damage reduction, climbing toward 8% while pairing with Stone for Charge-Armour.',
+  AGI: 'Agility shaves the global cooldown toward 0.75s and widens dodge rolls, unlocking Jet Dash with Air.',
+  SPR: 'Spirit amplifies restorative and cleansing payloads, empowering Water and Verdant resonance hooks.',
+  INS: 'Insight expands hidden-information reveals—from glow pings to Forecast—and supercharges Essence breaches.',
+  CHA: 'Charisma strengthens threat and aura broadcasts, sharing resonance boons across the party.',
+  Impact: 'Impact boosts the payoff of damage abilities by amplifying the final damage multiplier for Attacks and Specials.'
+};
+
+export const ELEMENT_DESCRIPTIONS = {
+  Fire: 'Fire embodies burn and empowerment themes—aggressive damage that peaks in Inferno Wave and lava reactions.',
+  Water: 'Water focuses on flow and cleansing support, turning resonance into sustain, debuff washes, and redirect stances.',
+  Stone: 'Stone is the fortify-and-impede element, layering mitigation, slows, and Charge-Armour bulwarks.',
+  Air: 'Air channels lift and displacement, rewarding high agility builds with mobility tricks like Jet Dash.',
+  Spark: 'Spark carries charge-and-jump energy, excelling at chained crit bursts and stun-laced openings.',
+  Verdant: 'Verdant nurtures regrowth and entanglement, blending damage with heals through living terrain effects.',
+  Essence: 'Essence manipulates soullight to infuse or transmute, enabling phase strikes and reality-tearing ultimates.'
 };
 
 export const ELEMENTS = ['Fire', 'Water', 'Stone', 'Air', 'Spark', 'Verdant', 'Essence'];
