@@ -1,3 +1,4 @@
 git add .github
-git commit -m "Add auto-deploy workflow"
+git commit -m "Fix GitHub Actions workflow"
 git push
+
