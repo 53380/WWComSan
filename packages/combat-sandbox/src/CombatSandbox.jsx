@@ -155,8 +155,12 @@ export function CombatSandbox({
       ABILITIES.forEach((ability) => {
         const rules = LANE_RULES[ability.variant] || { softMin: 0.3, minCompat: 0.3, offKitSlots: 0, universalTags: [] };
         const compatScore = computeCompatibility(enemy.weapon, ability);
+        const abilityTags = [
+          ...(ability.preferredWeaponTags || []),
+          ...(ability.allowedWeaponTags || [])
+        ];
         const hasUniversal = (rules.universalTags || []).some(
-          (tag) => enemyWeaponTags.includes(tag) || (ability.kit?.requiredTags || []).includes(tag)
+          (tag) => enemyWeaponTags.includes(tag) || abilityTags.includes(tag)
         );
         const minCompat = rules.minCompat ?? 0;
         const softMin = rules.softMin ?? 0;
@@ -400,8 +404,12 @@ export function CombatSandbox({
       if (elemValue < 25) return false;
 
       const compatScore = computeCompatibility(character.weapon, a);
+      const abilityTags = [
+        ...(a.preferredWeaponTags || []),
+        ...(a.allowedWeaponTags || [])
+      ];
       const hasUniversal = (rules.universalTags || []).some(
-        (tag) => weaponTags.includes(tag) || (a.kit?.requiredTags || []).includes(tag)
+        (tag) => weaponTags.includes(tag) || abilityTags.includes(tag)
       );
 
       if (compatScore < (rules.softMin ?? 0) && !hasUniversal) {
@@ -412,14 +420,29 @@ export function CombatSandbox({
     })
       .map((ability) => {
         const compatScore = computeCompatibility(character.weapon, ability);
+        const abilityTags = [
+          ...(ability.preferredWeaponTags || []),
+          ...(ability.allowedWeaponTags || [])
+        ];
         const hasUniversal = (rules.universalTags || []).some(
-          (tag) => weaponTags.includes(tag) || (ability.kit?.requiredTags || []).includes(tag)
+          (tag) => weaponTags.includes(tag) || abilityTags.includes(tag)
         );
+        const matchesPreferred = (ability.preferredWeaponTags || []).some((tag) => weaponTags.includes(tag));
+        const matchesAllowed = !matchesPreferred
+          && (ability.allowedWeaponTags || []).some((tag) => weaponTags.includes(tag));
+        const matchType = matchesPreferred
+          ? 'preferred'
+          : matchesAllowed
+            ? 'allowed'
+            : ability.preferredWeaponTags?.length || ability.allowedWeaponTags?.length
+              ? 'off'
+              : 'universal';
         return {
           ability,
           compatScore,
           compatTier: getCrossoverTier(compatScore),
           hasUniversal,
+          matchType,
           elemIndex: topResonances.findIndex((r) => r.elem === ability.governingElem)
         };
       })
@@ -848,12 +871,14 @@ export function CombatSandbox({
                       onChange={(e) => setSelectedAbilities((prev) => ({ ...prev, [lane]: e.target.value }))}
                       className="w-full bg-gray-700 text-white text-xs rounded px-2 py-1"
                     >
-                      {relevantAbilities.map(({ ability: optionAbility, compatScore, compatTier, isOffKit, isUniversal }) => {
+                      {relevantAbilities.map(({ ability: optionAbility, compatScore, compatTier, isOffKit, isUniversal, matchType }) => {
                         const recommended = isAbilityRecommended(optionAbility, { variant, compatScore });
+                        const matchIcon =
+                          matchType === 'preferred' ? '⭐' : matchType === 'allowed' ? '✓' : matchType === 'universal' ? '∞' : '•';
                         return (
                           <option key={optionAbility.id} value={optionAbility.id}>
-                            {recommended ? '⭐ ' : ''}
-                            {optionAbility.name} ({compatTier})
+                            {recommended ? '🡅 ' : ''}
+                            {matchIcon} {optionAbility.name} ({compatTier})
                             {isOffKit ? ' • Off-kit' : ''}
                             {isUniversal ? ' • Universal' : ''}
                           </option>
@@ -886,6 +911,15 @@ export function CombatSandbox({
                 const compatScore = cost.crossover?.score ?? computeCompatibility(character.weapon, ability);
                 const compatTier = cost.crossover?.tier ?? getCrossoverTier(compatScore);
                 const abilityMeta = laneAbilityData[variant]?.abilities.find((entry) => entry.ability.id === ability.id);
+                const weaponTags = WEAPON_TAGS[character.weapon] || [];
+                const matchType = abilityMeta?.matchType
+                  ?? ((ability.preferredWeaponTags || []).some((tag) => weaponTags.includes(tag))
+                    ? 'preferred'
+                    : (ability.allowedWeaponTags || []).some((tag) => weaponTags.includes(tag))
+                      ? 'allowed'
+                      : (ability.preferredWeaponTags?.length || ability.allowedWeaponTags?.length)
+                        ? 'off'
+                        : 'universal');
                 const penalty = cost.crossover?.penalty;
                 const canAfford = Number.isFinite(cost.finalCost) && character.currentER >= cost.finalCost;
                 const meetsResonance = !ability.requiresResonance || cost.resonance >= ability.requiresResonance;
@@ -910,11 +944,21 @@ export function CombatSandbox({
                     : compatTier === 'Hard'
                     ? 'bg-orange-600'
                     : 'bg-red-700';
+                const matchIcon =
+                  matchType === 'preferred' ? '⭐' : matchType === 'allowed' ? '✓' : matchType === 'universal' ? '∞' : '•';
+                const matchLabel =
+                  matchType === 'preferred'
+                    ? 'Preferred'
+                    : matchType === 'allowed'
+                    ? 'Cross-over'
+                    : matchType === 'universal'
+                    ? 'Universal'
+                    : 'Off-tag';
                 let compatibilityTooltip = '';
                 if (compatTier === 'Blocked') {
                   compatibilityTooltip = 'Blocked by weapon compatibility';
                 } else {
-                  compatibilityTooltip = `Compatibility ${compatScore.toFixed(2)} (${compatTier})`;
+                  compatibilityTooltip = `Compatibility ${compatScore.toFixed(2)} (${compatTier}) • ${matchLabel}`;
                   if (penalty && compatTier !== 'Native') {
                     compatibilityTooltip += ` • ${formatPercent(erPenaltyPct)}% ER, ${formatPercent(dmgPenaltyPct)}% dmg, ${formatPercent(windPenaltyPct)}% wind-up`;
                   }
@@ -942,10 +986,10 @@ export function CombatSandbox({
                     title={tooltip}
                   >
                     <div
-                      className={`absolute top-1 left-1 px-1.5 py-0.5 rounded text-[10px] font-bold ${compatBadgeClass}`}
-                      title={`Compatibility ${compatScore.toFixed(2)} (${compatTier})`}
-                    >
-                      {compatTier}
+                    className={`absolute top-1 left-1 px-1.5 py-0.5 rounded text-[10px] font-bold ${compatBadgeClass}`}
+                    title={`Compatibility ${compatScore.toFixed(2)} (${compatTier}) • ${matchLabel}`}
+                  >
+                      {matchIcon} {compatTier}
                     </div>
                     <div className="text-xs font-bold mb-1 text-gray-400">{lane}</div>
                     <div className="text-sm font-bold mb-1">{ability.name}</div>

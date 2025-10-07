@@ -34,29 +34,191 @@ export const ELEMENT_LANE_SYNERGY = {
 export const ELEMENTS = ['Fire', 'Water', 'Stone', 'Air', 'Spark', 'Verdant', 'Essence'];
 
 export const WEAPONS = {
-  'Long Swords': { mass: 2, damageMultiplier: 1.0, windUpBase: 0.36, recoveryBase: 0.48, erGainedOnHit: 4 },
-  'Curved Long Blades': { mass: 2, damageMultiplier: 1.0, windUpBase: 0.34, recoveryBase: 0.48, erGainedOnHit: 4 },
-  'Short Swords': { mass: 1, damageMultiplier: 0.9, windUpBase: 0.28, recoveryBase: 0.38, erGainedOnHit: 3 },
-  'Great Swords': { mass: 3, damageMultiplier: 1.3, windUpReduction: 0.08, windUpBase: 0.405, recoveryBase: 0.60, erGainedOnHit: 6 },
-  'Knives & Daggers': { mass: 1, damageMultiplier: 0.85, windUpBase: 0.26, recoveryBase: 0.36, erGainedOnHit: 2 },
-  'Fist Weapons': { mass: 1, damageMultiplier: 0.85, windUpBase: 0.26, recoveryBase: 0.34, erGainedOnHit: 2 },
-  'One-Hand Axes': { mass: 2, damageMultiplier: 1.1, windUpBase: 0.38, recoveryBase: 0.52, erGainedOnHit: 4 },
-  'Two-Hand Axes': { mass: 3, damageMultiplier: 1.35, windUpBase: 0.46, recoveryBase: 0.62, erGainedOnHit: 6 },
-  'Spears (Thrusting)': { mass: 2, damageMultiplier: 1.0, windUpBase: 0.36, recoveryBase: 0.48, erGainedOnHit: 4 },
-  'Polearms (Sweeping)': { mass: 2, damageMultiplier: 1.05, windUpBase: 0.40, recoveryBase: 0.52, erGainedOnHit: 4 },
-  'Blunt Weapons': { mass: 3, damageMultiplier: 1.35, windUpBase: 0.46, recoveryBase: 0.64, erGainedOnHit: 6 },
-  'Flails & Chain Maces': { mass: 2, damageMultiplier: 1.1, windUpBase: 0.36, recoveryBase: 0.52, erGainedOnHit: 4 },
-  'Whips & Urumi': { mass: 1, damageMultiplier: 0.9, windUpBase: 0.32, recoveryBase: 0.50, erGainedOnHit: 2 },
-  'Staffs': { mass: 2, damageMultiplier: 1.0, windUpBase: 0.38, recoveryBase: 0.50, erGainedOnHit: 4 },
-  'Shields': { mass: 2, damageMultiplier: 0.8, windUpBase: 0.32, recoveryBase: 0.42, erGainedOnHit: 4 },
-  'Longbows': { mass: 2, damageMultiplier: 1.0, windUpBase: 0.42, recoveryBase: 0.52, erGainedOnHit: 4 },
-  'Short Bows': { mass: 1, damageMultiplier: 0.9, windUpBase: 0.34, recoveryBase: 0.46, erGainedOnHit: 3 },
-  'Crossbows': { mass: 2, damageMultiplier: 1.1, windUpBase: 0.42, recoveryBase: 0.56, erGainedOnHit: 4 },
-  'Pistols': { mass: 2, damageMultiplier: 1.0, windUpBase: 0.42, recoveryBase: 0.56, erGainedOnHit: 4 },
-  'Shotguns': { mass: 2, damageMultiplier: 1.2, windUpBase: 0.42, recoveryBase: 0.60, erGainedOnHit: 4 },
-  'Long Guns': { mass: 3, damageMultiplier: 1.25, windUpBase: 0.50, recoveryBase: 0.65, erGainedOnHit: 6 },
-  'Thrown Weapons': { mass: 1, damageMultiplier: 0.95, windUpBase: 0.30, recoveryBase: 0.42, erGainedOnHit: 2 },
-  'Misc. Ranged': { mass: 1, damageMultiplier: 0.9, windUpBase: 0.32, recoveryBase: 0.46, erGainedOnHit: 2 }
+  'Long Swords': {
+    mass: 2,
+    damageMultiplier: 1.0,
+    windUpBase: 0.36,
+    recoveryBase: 0.48,
+    erGainedOnHit: 4,
+    styleTags: ['Close', 'Balanced', 'Parry', 'Guard', 'Control']
+  },
+  'Curved Long Blades': {
+    mass: 2,
+    damageMultiplier: 1.0,
+    windUpBase: 0.34,
+    recoveryBase: 0.48,
+    erGainedOnHit: 4,
+    styleTags: ['Close', 'Finesse', 'Parry', 'Cleave']
+  },
+  'Short Swords': {
+    mass: 1,
+    damageMultiplier: 0.9,
+    windUpBase: 0.28,
+    recoveryBase: 0.38,
+    erGainedOnHit: 3,
+    styleTags: ['Close', 'Finesse', 'Guard', 'Parry']
+  },
+  'Great Swords': {
+    mass: 3,
+    damageMultiplier: 1.3,
+    windUpReduction: 0.08,
+    windUpBase: 0.405,
+    recoveryBase: 0.60,
+    erGainedOnHit: 6,
+    styleTags: ['Close', 'Heavy', 'Cleave', 'Stun']
+  },
+  'Knives & Daggers': {
+    mass: 1,
+    damageMultiplier: 0.85,
+    windUpBase: 0.26,
+    recoveryBase: 0.36,
+    erGainedOnHit: 2,
+    styleTags: ['Close', 'Finesse', 'Bleed', 'Dodge']
+  },
+  'Fist Weapons': {
+    mass: 1,
+    damageMultiplier: 0.85,
+    windUpBase: 0.26,
+    recoveryBase: 0.34,
+    erGainedOnHit: 2,
+    styleTags: ['Close', 'Mobility', 'Finesse', 'Dodge']
+  },
+  'One-Hand Axes': {
+    mass: 2,
+    damageMultiplier: 1.1,
+    windUpBase: 0.38,
+    recoveryBase: 0.52,
+    erGainedOnHit: 4,
+    styleTags: ['Close', 'Heavy', 'Cleave', 'Stun']
+  },
+  'Two-Hand Axes': {
+    mass: 3,
+    damageMultiplier: 1.35,
+    windUpBase: 0.46,
+    recoveryBase: 0.62,
+    erGainedOnHit: 6,
+    styleTags: ['Close', 'Heavy', 'Cleave', 'Knockback']
+  },
+  'Spears (Thrusting)': {
+    mass: 2,
+    damageMultiplier: 1.0,
+    windUpBase: 0.36,
+    recoveryBase: 0.48,
+    erGainedOnHit: 4,
+    styleTags: ['Reach', 'Pierce', 'Control', 'Guard']
+  },
+  'Polearms (Sweeping)': {
+    mass: 2,
+    damageMultiplier: 1.05,
+    windUpBase: 0.40,
+    recoveryBase: 0.52,
+    erGainedOnHit: 4,
+    styleTags: ['Reach', 'Cleave', 'Control', 'Pierce']
+  },
+  'Blunt Weapons': {
+    mass: 3,
+    damageMultiplier: 1.35,
+    windUpBase: 0.46,
+    recoveryBase: 0.64,
+    erGainedOnHit: 6,
+    styleTags: ['Close', 'Heavy', 'Stun', 'Knockback']
+  },
+  'Flails & Chain Maces': {
+    mass: 2,
+    damageMultiplier: 1.1,
+    windUpBase: 0.36,
+    recoveryBase: 0.52,
+    erGainedOnHit: 4,
+    styleTags: ['Close', 'Heavy', 'Stun', 'Control']
+  },
+  'Whips & Urumi': {
+    mass: 1,
+    damageMultiplier: 0.9,
+    windUpBase: 0.32,
+    recoveryBase: 0.50,
+    erGainedOnHit: 2,
+    styleTags: ['Reach', 'Finesse', 'Control', 'Mobility']
+  },
+  Staffs: {
+    mass: 2,
+    damageMultiplier: 1.0,
+    windUpBase: 0.38,
+    recoveryBase: 0.50,
+    erGainedOnHit: 4,
+    styleTags: ['Reach', 'Guard', 'Channel', 'Control']
+  },
+  Shields: {
+    mass: 2,
+    damageMultiplier: 0.8,
+    windUpBase: 0.32,
+    recoveryBase: 0.42,
+    erGainedOnHit: 4,
+    styleTags: ['Close', 'Guard', 'Stun', 'Control']
+  },
+  Longbows: {
+    mass: 2,
+    damageMultiplier: 1.0,
+    windUpBase: 0.42,
+    recoveryBase: 0.52,
+    erGainedOnHit: 4,
+    styleTags: ['Ranged', 'Pierce', 'AoE', 'Channel']
+  },
+  'Short Bows': {
+    mass: 1,
+    damageMultiplier: 0.9,
+    windUpBase: 0.34,
+    recoveryBase: 0.46,
+    erGainedOnHit: 3,
+    styleTags: ['Ranged', 'Finesse', 'Mobility', 'Pierce']
+  },
+  Crossbows: {
+    mass: 2,
+    damageMultiplier: 1.1,
+    windUpBase: 0.42,
+    recoveryBase: 0.56,
+    erGainedOnHit: 4,
+    styleTags: ['Ranged', 'Pierce', 'Precision', 'Guard']
+  },
+  Pistols: {
+    mass: 2,
+    damageMultiplier: 1.0,
+    windUpBase: 0.42,
+    recoveryBase: 0.56,
+    erGainedOnHit: 4,
+    styleTags: ['Ranged', 'Finesse', 'Close', 'Mobility']
+  },
+  Shotguns: {
+    mass: 2,
+    damageMultiplier: 1.2,
+    windUpBase: 0.42,
+    recoveryBase: 0.60,
+    erGainedOnHit: 4,
+    styleTags: ['Ranged', 'Close', 'AoE', 'Knockback']
+  },
+  'Long Guns': {
+    mass: 3,
+    damageMultiplier: 1.25,
+    windUpBase: 0.50,
+    recoveryBase: 0.65,
+    erGainedOnHit: 6,
+    styleTags: ['Ranged', 'Heavy', 'Pierce', 'Precision']
+  },
+  'Thrown Weapons': {
+    mass: 1,
+    damageMultiplier: 0.95,
+    windUpBase: 0.30,
+    recoveryBase: 0.42,
+    erGainedOnHit: 2,
+    styleTags: ['Ranged', 'Mobility', 'Control', 'Pierce']
+  },
+  'Misc. Ranged': {
+    mass: 1,
+    damageMultiplier: 0.9,
+    windUpBase: 0.32,
+    recoveryBase: 0.46,
+    erGainedOnHit: 2,
+    styleTags: ['Ranged', 'Trick', 'Control', 'Channel']
+  }
 };
 
 export const WEAPON_FAMILIES = {
@@ -85,31 +247,9 @@ export const WEAPON_FAMILIES = {
   'Misc. Ranged': 'Ranged'
 };
 
-export const WEAPON_TAGS = {
-  'Long Swords': ['Close', 'Balanced', 'Parry', 'Guard', 'Control'],
-  'Curved Long Blades': ['Close', 'Finesse', 'Parry', 'Cleave'],
-  'Short Swords': ['Close', 'Finesse', 'Guard', 'Parry'],
-  'Great Swords': ['Close', 'Heavy', 'Cleave', 'Stun'],
-  'Knives & Daggers': ['Close', 'Finesse', 'Bleed', 'Dodge'],
-  'Fist Weapons': ['Close', 'Mobility', 'Finesse', 'Dodge'],
-  'One-Hand Axes': ['Close', 'Heavy', 'Cleave', 'Stun'],
-  'Two-Hand Axes': ['Close', 'Heavy', 'Cleave', 'Knockback'],
-  'Spears (Thrusting)': ['Reach', 'Pierce', 'Control', 'Guard'],
-  'Polearms (Sweeping)': ['Reach', 'Cleave', 'Control', 'Pierce'],
-  'Blunt Weapons': ['Close', 'Heavy', 'Stun', 'Knockback'],
-  'Flails & Chain Maces': ['Close', 'Heavy', 'Stun', 'Control'],
-  'Whips & Urumi': ['Reach', 'Finesse', 'Control', 'Mobility'],
-  Staffs: ['Reach', 'Guard', 'Channel', 'Control'],
-  Shields: ['Close', 'Guard', 'Stun', 'Control'],
-  Longbows: ['Ranged', 'Pierce', 'AoE', 'Channel'],
-  'Short Bows': ['Ranged', 'Finesse', 'Mobility', 'Pierce'],
-  Crossbows: ['Ranged', 'Pierce', 'Precision', 'Guard'],
-  Pistols: ['Ranged', 'Finesse', 'Close', 'Mobility'],
-  Shotguns: ['Ranged', 'Close', 'AoE', 'Knockback'],
-  'Long Guns': ['Ranged', 'Heavy', 'Pierce', 'Precision'],
-  'Thrown Weapons': ['Ranged', 'Mobility', 'Control', 'Pierce'],
-  'Misc. Ranged': ['Ranged', 'Trick', 'Control', 'Channel']
-};
+export const WEAPON_TAGS = Object.fromEntries(
+  Object.entries(WEAPONS).map(([name, data]) => [name, data.styleTags || []])
+);
 
 export const LANE_RULES = {
   Attack: { minCompat: 0.5, softMin: 0.4, offKitSlots: 1, universalTags: [] },
@@ -148,11 +288,9 @@ export const ABILITIES = [
       risk: 1.0
     },
     description: 'Fire strike',
-    kit: {
-      requiredTags: ['Close'],
-      preferredFamilies: ['Blade', 'Blunt'],
-      tags: ['Cleave', 'Control']
-    }
+    preferredWeaponTags: ['Close'],
+    allowedWeaponTags: ['Cleave', 'Control'],
+    bannedWeaponTags: []
   },
   {
     id: 'fire_defense',
@@ -177,11 +315,9 @@ export const ABILITIES = [
     },
     description: '50% mitigation',
     duration: 2000,
-    kit: {
-      requiredTags: ['Guard'],
-      preferredFamilies: ['Blade', 'Blunt', 'Arcane'],
-      tags: ['Parry', 'Control']
-    }
+    preferredWeaponTags: ['Guard'],
+    allowedWeaponTags: ['Parry', 'Control'],
+    bannedWeaponTags: []
   },
   {
     id: 'fire_control',
@@ -206,11 +342,9 @@ export const ABILITIES = [
     description: '1.25s Slow',
     ccDuration: 1.25,
     ccType: 'Slow',
-    kit: {
-      requiredTags: ['Control'],
-      preferredFamilies: ['Blade', 'Pierce', 'Arcane'],
-      tags: ['Reach', 'Parry']
-    }
+    preferredWeaponTags: ['Control'],
+    allowedWeaponTags: ['Reach', 'Parry'],
+    bannedWeaponTags: []
   },
   {
     id: 'fire_special',
@@ -234,11 +368,9 @@ export const ABILITIES = [
     },
     description: 'Cone (R≥0.5)',
     requiresResonance: 0.5,
-    kit: {
-      requiredTags: ['Cleave'],
-      preferredFamilies: ['Blade', 'Blunt'],
-      tags: ['AoE', 'Heavy']
-    }
+    preferredWeaponTags: ['Cleave'],
+    allowedWeaponTags: ['AoE', 'Heavy'],
+    bannedWeaponTags: []
   },
   {
     id: 'fire_safe_attack',
@@ -261,11 +393,9 @@ export const ABILITIES = [
       risk: 0.85
     },
     description: 'Safe jab',
-    kit: {
-      requiredTags: ['Close'],
-      preferredFamilies: ['Blade', 'Pierce'],
-      tags: ['Finesse', 'Parry']
-    }
+    preferredWeaponTags: ['Close'],
+    allowedWeaponTags: ['Finesse', 'Parry'],
+    bannedWeaponTags: []
   },
   {
     id: 'fire_heavy_defense',
@@ -290,11 +420,9 @@ export const ABILITIES = [
     },
     description: '65% mitigation',
     duration: 3000,
-    kit: {
-      requiredTags: ['Guard'],
-      preferredFamilies: ['Blunt', 'Blade'],
-      tags: ['Stun', 'Heavy']
-    }
+    preferredWeaponTags: ['Guard'],
+    allowedWeaponTags: ['Stun', 'Heavy'],
+    bannedWeaponTags: []
   },
   {
     id: 'fire_agg_attack',
@@ -317,11 +445,9 @@ export const ABILITIES = [
       risk: 1.1
     },
     description: 'Aggressive AoE',
-    kit: {
-      requiredTags: ['Cleave'],
-      preferredFamilies: ['Blade', 'Blunt'],
-      tags: ['AoE', 'Heavy']
-    }
+    preferredWeaponTags: ['Cleave'],
+    allowedWeaponTags: ['AoE', 'Heavy'],
+    bannedWeaponTags: []
   },
   {
     id: 'water_attack',
@@ -344,11 +470,9 @@ export const ABILITIES = [
       risk: 1.0
     },
     description: 'Water strike',
-    kit: {
-      requiredTags: ['Close'],
-      preferredFamilies: ['Blade', 'Pierce', 'Arcane'],
-      tags: ['Finesse', 'Control']
-    }
+    preferredWeaponTags: ['Close'],
+    allowedWeaponTags: ['Finesse', 'Control'],
+    bannedWeaponTags: []
   },
   {
     id: 'water_defense',
@@ -373,11 +497,9 @@ export const ABILITIES = [
     },
     description: '60% mitigation',
     duration: 2000,
-    kit: {
-      requiredTags: ['Guard'],
-      preferredFamilies: ['Arcane', 'Blade', 'Pierce'],
-      tags: ['Control', 'Channel']
-    }
+    preferredWeaponTags: ['Guard'],
+    allowedWeaponTags: ['Control', 'Channel'],
+    bannedWeaponTags: []
   },
   {
     id: 'water_control',
@@ -402,11 +524,9 @@ export const ABILITIES = [
     description: '1.5s Slow',
     ccDuration: 1.5,
     ccType: 'Slow',
-    kit: {
-      requiredTags: ['Control'],
-      preferredFamilies: ['Pierce', 'Arcane'],
-      tags: ['Reach', 'Channel']
-    }
+    preferredWeaponTags: ['Control'],
+    allowedWeaponTags: ['Reach', 'Channel'],
+    bannedWeaponTags: []
   },
   {
     id: 'water_safe_attack',
@@ -429,11 +549,9 @@ export const ABILITIES = [
       risk: 0.85
     },
     description: 'Sustained poke',
-    kit: {
-      requiredTags: ['Close'],
-      preferredFamilies: ['Pierce', 'Blade'],
-      tags: ['Finesse', 'Control']
-    }
+    preferredWeaponTags: ['Close'],
+    allowedWeaponTags: ['Finesse', 'Control'],
+    bannedWeaponTags: []
   },
   {
     id: 'water_heavy_defense',
@@ -458,11 +576,9 @@ export const ABILITIES = [
     },
     description: '70% mitigation',
     duration: 3500,
-    kit: {
-      requiredTags: ['Guard'],
-      preferredFamilies: ['Arcane', 'Blunt'],
-      tags: ['Channel', 'Heavy']
-    }
+    preferredWeaponTags: ['Guard'],
+    allowedWeaponTags: ['Channel', 'Heavy'],
+    bannedWeaponTags: []
   },
   {
     id: 'stone_attack',
@@ -485,11 +601,9 @@ export const ABILITIES = [
       risk: 1.05
     },
     description: 'Heavy strike',
-    kit: {
-      requiredTags: ['Heavy'],
-      preferredFamilies: ['Blunt', 'Blade'],
-      tags: ['Cleave', 'Stun']
-    }
+    preferredWeaponTags: ['Heavy'],
+    allowedWeaponTags: ['Cleave', 'Stun'],
+    bannedWeaponTags: []
   },
   {
     id: 'stone_defense',
@@ -514,11 +628,9 @@ export const ABILITIES = [
     },
     description: '60% mitigation',
     duration: 2500,
-    kit: {
-      requiredTags: ['Guard'],
-      preferredFamilies: ['Blunt', 'Blade'],
-      tags: ['Stun', 'Heavy']
-    }
+    preferredWeaponTags: ['Guard'],
+    allowedWeaponTags: ['Stun', 'Heavy'],
+    bannedWeaponTags: []
   },
   {
     id: 'stone_control',
@@ -543,11 +655,9 @@ export const ABILITIES = [
     description: '1.75s Root',
     ccDuration: 1.75,
     ccType: 'Root',
-    kit: {
-      requiredTags: ['Control'],
-      preferredFamilies: ['Blunt', 'Pierce'],
-      tags: ['Knockback', 'Stun']
-    }
+    preferredWeaponTags: ['Control'],
+    allowedWeaponTags: ['Knockback', 'Stun'],
+    bannedWeaponTags: []
   },
   {
     id: 'stone_safe_attack',
@@ -570,11 +680,9 @@ export const ABILITIES = [
       risk: 0.8
     },
     description: 'Defensive strike',
-    kit: {
-      requiredTags: ['Guard'],
-      preferredFamilies: ['Blunt', 'Blade'],
-      tags: ['Close', 'Control']
-    }
+    preferredWeaponTags: ['Guard'],
+    allowedWeaponTags: ['Close', 'Control'],
+    bannedWeaponTags: []
   },
   {
     id: 'stone_agg_attack',
@@ -597,11 +705,9 @@ export const ABILITIES = [
       risk: 1.15
     },
     description: 'Heavy slam',
-    kit: {
-      requiredTags: ['Heavy'],
-      preferredFamilies: ['Blunt'],
-      tags: ['Cleave', 'Knockback']
-    }
+    preferredWeaponTags: ['Heavy'],
+    allowedWeaponTags: ['Cleave', 'Knockback'],
+    bannedWeaponTags: []
   },
   {
     id: 'stone_heavy_defense',
@@ -626,11 +732,9 @@ export const ABILITIES = [
     },
     description: '75% mitigation',
     duration: 4000,
-    kit: {
-      requiredTags: ['Guard'],
-      preferredFamilies: ['Blunt'],
-      tags: ['Heavy', 'Knockback']
-    }
+    preferredWeaponTags: ['Guard'],
+    allowedWeaponTags: ['Heavy', 'Knockback'],
+    bannedWeaponTags: []
   },
   {
     id: 'air_attack',
@@ -653,11 +757,9 @@ export const ABILITIES = [
       risk: 0.95
     },
     description: 'Swift strike',
-    kit: {
-      requiredTags: ['Close'],
-      preferredFamilies: ['Blade', 'Pierce'],
-      tags: ['Mobility', 'Finesse']
-    }
+    preferredWeaponTags: ['Close'],
+    allowedWeaponTags: ['Mobility', 'Finesse'],
+    bannedWeaponTags: []
   },
   {
     id: 'air_defense',
@@ -682,11 +784,9 @@ export const ABILITIES = [
     },
     description: '65% mitigation',
     duration: 1800,
-    kit: {
-      requiredTags: ['Guard'],
-      preferredFamilies: ['Blade', 'Pierce', 'Arcane'],
-      tags: ['Dodge', 'Mobility']
-    }
+    preferredWeaponTags: ['Guard'],
+    allowedWeaponTags: ['Dodge', 'Mobility'],
+    bannedWeaponTags: []
   },
   {
     id: 'air_control',
@@ -711,11 +811,9 @@ export const ABILITIES = [
     description: '1.0s Knockback',
     ccDuration: 1.0,
     ccType: 'Knockback',
-    kit: {
-      requiredTags: ['Control'],
-      preferredFamilies: ['Pierce', 'Ranged'],
-      tags: ['Mobility', 'Knockback']
-    }
+    preferredWeaponTags: ['Control'],
+    allowedWeaponTags: ['Mobility', 'Knockback'],
+    bannedWeaponTags: []
   },
   {
     id: 'air_safe_attack',
@@ -738,11 +836,9 @@ export const ABILITIES = [
       risk: 0.8
     },
     description: 'Mobile poke',
-    kit: {
-      requiredTags: ['Close'],
-      preferredFamilies: ['Pierce', 'Blade'],
-      tags: ['Mobility', 'Finesse']
-    }
+    preferredWeaponTags: ['Close'],
+    allowedWeaponTags: ['Mobility', 'Finesse'],
+    bannedWeaponTags: []
   },
   {
     id: 'air_agg_attack',
@@ -765,11 +861,9 @@ export const ABILITIES = [
       risk: 1.05
     },
     description: 'Rapid strikes',
-    kit: {
-      requiredTags: ['Close'],
-      preferredFamilies: ['Pierce', 'Blade'],
-      tags: ['Mobility', 'AoE']
-    }
+    preferredWeaponTags: ['Close'],
+    allowedWeaponTags: ['Mobility', 'AoE'],
+    bannedWeaponTags: []
   },
   {
     id: 'spark_attack',
@@ -792,11 +886,9 @@ export const ABILITIES = [
       risk: 1.0
     },
     description: 'Electric burst',
-    kit: {
-      requiredTags: ['Ranged'],
-      preferredFamilies: ['Ranged', 'Arcane'],
-      tags: ['Finesse', 'Precision']
-    }
+    preferredWeaponTags: ['Ranged'],
+    allowedWeaponTags: ['Finesse', 'Precision'],
+    bannedWeaponTags: []
   },
   {
     id: 'spark_defense',
@@ -821,11 +913,9 @@ export const ABILITIES = [
     },
     description: '60% mitigation',
     duration: 2000,
-    kit: {
-      requiredTags: ['Guard'],
-      preferredFamilies: ['Ranged', 'Arcane'],
-      tags: ['Control', 'Channel']
-    }
+    preferredWeaponTags: ['Guard'],
+    allowedWeaponTags: ['Control', 'Channel'],
+    bannedWeaponTags: []
   },
   {
     id: 'spark_control',
@@ -850,11 +940,9 @@ export const ABILITIES = [
     description: '1.25s Stun',
     ccDuration: 1.25,
     ccType: 'Stun',
-    kit: {
-      requiredTags: ['Control'],
-      preferredFamilies: ['Ranged', 'Arcane'],
-      tags: ['Stun', 'Precision']
-    }
+    preferredWeaponTags: ['Control'],
+    allowedWeaponTags: ['Stun', 'Precision'],
+    bannedWeaponTags: []
   },
   {
     id: 'spark_safe_attack',
@@ -877,11 +965,9 @@ export const ABILITIES = [
       risk: 0.85
     },
     description: 'Quick zap',
-    kit: {
-      requiredTags: ['Ranged'],
-      preferredFamilies: ['Ranged'],
-      tags: ['Finesse', 'Mobility']
-    }
+    preferredWeaponTags: ['Ranged'],
+    allowedWeaponTags: ['Finesse', 'Mobility'],
+    bannedWeaponTags: []
   },
   {
     id: 'spark_agg_attack',
@@ -904,11 +990,9 @@ export const ABILITIES = [
       risk: 1.05
     },
     description: 'Chain lightning',
-    kit: {
-      requiredTags: ['Ranged'],
-      preferredFamilies: ['Ranged'],
-      tags: ['AoE', 'Precision']
-    }
+    preferredWeaponTags: ['Ranged'],
+    allowedWeaponTags: ['AoE', 'Precision'],
+    bannedWeaponTags: []
   },
   {
     id: 'spark_heavy_defense',
@@ -933,15 +1017,89 @@ export const ABILITIES = [
     },
     description: '55% mitigation',
     duration: 2500,
-    kit: {
-      requiredTags: ['Guard'],
-      preferredFamilies: ['Ranged', 'Arcane'],
-      tags: ['Channel', 'Control']
-    }
+    preferredWeaponTags: ['Guard'],
+    allowedWeaponTags: ['Channel', 'Control'],
+    bannedWeaponTags: []
   },
-  { id: 'verdant_attack', name: 'Verdant Strike', family: 'Verdant', variant: 'Attack', baseBand: 5, baseDamage: 8, governingAttr: 'SPR', governingElem: 'Verdant', scalars: { scope: 1.0, potency: 1.0, uptime: 1.25, reliability: 1.0, mobility: 1.0, ccCap: 1.0, reaction: 1.10, cooldown: 1.0, risk: 1.0 }, description: 'Nature strike' },
-  { id: 'verdant_defense', name: 'Verdant Barrier', family: 'Verdant', variant: 'Defense', baseBand: 5, baseDamage: 3, mitigationMultiplier: 0.55, governingAttr: 'SPR', governingElem: 'Verdant', scalars: { scope: 1.0, potency: 0.90, uptime: 1.30, reliability: 1.0, mobility: 1.0, ccCap: 1.0, reaction: 1.10, cooldown: 1.0, risk: 0.90 }, description: '55% mitigation', duration: 2200 },
-  { id: 'verdant_control', name: 'Verdant Vines', family: 'Verdant', variant: 'Control', baseBand: 13, baseDamage: 5, governingAttr: 'SPR', governingElem: 'Verdant', scalars: { scope: 1.05, potency: 0.95, uptime: 1.20, reliability: 1.0, mobility: 0.95, ccCap: 1.05, reaction: 1.15, cooldown: 1.0, risk: 1.0 }, description: '1.5s Entangle', ccDuration: 1.5, ccType: 'Entangle' },
+  {
+    id: 'verdant_attack',
+    name: 'Verdant Strike',
+    family: 'Verdant',
+    variant: 'Attack',
+    baseBand: 5,
+    baseDamage: 8,
+    governingAttr: 'SPR',
+    governingElem: 'Verdant',
+    scalars: {
+      scope: 1.0,
+      potency: 1.0,
+      uptime: 1.25,
+      reliability: 1.0,
+      mobility: 1.0,
+      ccCap: 1.0,
+      reaction: 1.1,
+      cooldown: 1.0,
+      risk: 1.0
+    },
+    description: 'Nature strike',
+    preferredWeaponTags: ['Close'],
+    allowedWeaponTags: ['Control', 'Channel'],
+    bannedWeaponTags: []
+  },
+  {
+    id: 'verdant_defense',
+    name: 'Verdant Barrier',
+    family: 'Verdant',
+    variant: 'Defense',
+    baseBand: 5,
+    baseDamage: 3,
+    mitigationMultiplier: 0.55,
+    governingAttr: 'SPR',
+    governingElem: 'Verdant',
+    scalars: {
+      scope: 1.0,
+      potency: 0.9,
+      uptime: 1.3,
+      reliability: 1.0,
+      mobility: 1.0,
+      ccCap: 1.0,
+      reaction: 1.1,
+      cooldown: 1.0,
+      risk: 0.9
+    },
+    description: '55% mitigation',
+    duration: 2200,
+    preferredWeaponTags: ['Guard'],
+    allowedWeaponTags: ['Control', 'Channel'],
+    bannedWeaponTags: []
+  },
+  {
+    id: 'verdant_control',
+    name: 'Verdant Vines',
+    family: 'Verdant',
+    variant: 'Control',
+    baseBand: 13,
+    baseDamage: 5,
+    governingAttr: 'SPR',
+    governingElem: 'Verdant',
+    scalars: {
+      scope: 1.05,
+      potency: 0.95,
+      uptime: 1.2,
+      reliability: 1.0,
+      mobility: 0.95,
+      ccCap: 1.05,
+      reaction: 1.15,
+      cooldown: 1.0,
+      risk: 1.0
+    },
+    description: '1.5s Entangle',
+    ccDuration: 1.5,
+    ccType: 'Entangle',
+    preferredWeaponTags: ['Control'],
+    allowedWeaponTags: ['Reach', 'Channel'],
+    bannedWeaponTags: []
+  },
   {
     id: 'verdant_safe_attack',
     name: 'Echo Pierce',
@@ -959,20 +1117,223 @@ export const ABILITIES = [
       reliability: 1.0,
       mobility: 1.0,
       ccCap: 1.0,
-      reaction: 1.10,
+      reaction: 1.1,
       cooldown: 1.0,
       risk: 0.85
     },
-    description: 'Pierce that siphons vitality'
+    description: 'Pierce that siphons vitality',
+    preferredWeaponTags: ['Pierce'],
+    allowedWeaponTags: ['Close', 'Channel'],
+    bannedWeaponTags: []
   },
-  { id: 'verdant_agg_attack', name: 'Wildspin', family: 'Verdant', variant: 'Attack', baseBand: 8, baseDamage: 14, governingAttr: 'SPR', governingElem: 'Verdant', scalars: { scope: 1.20, potency: 1.15, uptime: 1.30, reliability: 1.0, mobility: 1.05, ccCap: 1.0, reaction: 1.15, cooldown: 1.0, risk: 1.05 }, description: 'Whirling growth' },
-  { id: 'verdant_heavy_defense', name: 'Verdant Rootwall', family: 'Verdant', variant: 'Defense', baseBand: 7, baseDamage: 4, mitigationMultiplier: 0.35, governingAttr: 'SPR', governingElem: 'Verdant', scalars: { scope: 1.0, potency: 0.85, uptime: 1.50, reliability: 1.0, mobility: 0.75, ccCap: 1.0, reaction: 1.15, cooldown: 1.0, risk: 0.75 }, description: '65% mitigation', duration: 3800 },
-  { id: 'essence_attack', name: 'Aether Dash', family: 'Essence', variant: 'Attack', baseBand: 6, baseDamage: 10, governingAttr: 'INS', governingElem: 'Essence', scalars: { scope: 1.0, potency: 1.15, uptime: 1.0, reliability: 1.0, mobility: 1.10, ccCap: 1.0, reaction: 1.10, cooldown: 1.0, risk: 1.0 }, description: 'Phase strike' },
-  { id: 'essence_defense', name: 'Essence Shield', family: 'Essence', variant: 'Defense', baseBand: 6, baseDamage: 4, mitigationMultiplier: 0.60, governingAttr: 'INS', governingElem: 'Essence', scalars: { scope: 1.0, potency: 1.0, uptime: 1.15, reliability: 1.0, mobility: 1.05, ccCap: 1.0, reaction: 1.10, cooldown: 1.0, risk: 0.92 }, description: '60% mitigation', duration: 2100 },
-  { id: 'essence_control', name: 'Aether Suspend', family: 'Essence', variant: 'Control', baseBand: 15, baseDamage: 6, governingAttr: 'INS', governingElem: 'Essence', scalars: { scope: 1.0, potency: 1.05, uptime: 1.10, reliability: 1.0, mobility: 1.05, ccCap: 1.15, reaction: 1.20, cooldown: 1.0, risk: 1.0 }, description: '2.0s Suspend', ccDuration: 2.0, ccType: 'Suspend' },
-  { id: 'essence_safe_attack', name: 'Prism Touch', family: 'Essence', variant: 'Attack', baseBand: 4, baseDamage: 8, governingAttr: 'INS', governingElem: 'Essence', scalars: { scope: 1.0, potency: 1.00, uptime: 1.0, reliability: 1.0, mobility: 1.15, ccCap: 1.0, reaction: 1.10, cooldown: 1.0, risk: 0.90 }, description: 'Phase tap' },
-  { id: 'essence_agg_attack', name: 'Essence Fission', family: 'Essence', variant: 'Attack', baseBand: 10, baseDamage: 20, governingAttr: 'INS', governingElem: 'Essence', scalars: { scope: 1.15, potency: 1.35, uptime: 1.0, reliability: 1.0, mobility: 1.10, ccCap: 1.0, reaction: 1.20, cooldown: 1.0, risk: 1.10 }, description: 'Reality tear' },
-  { id: 'essence_heavy_defense', name: 'Stasis Tower', family: 'Essence', variant: 'Defense', baseBand: 9, baseDamage: 5, mitigationMultiplier: 0.40, governingAttr: 'INS', governingElem: 'Essence', scalars: { scope: 1.0, potency: 1.10, uptime: 1.25, reliability: 1.0, mobility: 0.85, ccCap: 1.0, reaction: 1.15, cooldown: 1.0, risk: 0.80 }, description: '60% mitigation', duration: 3000 },
+  {
+    id: 'verdant_agg_attack',
+    name: 'Wildspin',
+    family: 'Verdant',
+    variant: 'Attack',
+    baseBand: 8,
+    baseDamage: 14,
+    governingAttr: 'SPR',
+    governingElem: 'Verdant',
+    scalars: {
+      scope: 1.2,
+      potency: 1.15,
+      uptime: 1.3,
+      reliability: 1.0,
+      mobility: 1.05,
+      ccCap: 1.0,
+      reaction: 1.15,
+      cooldown: 1.0,
+      risk: 1.05
+    },
+    description: 'Whirling growth',
+    preferredWeaponTags: ['Cleave'],
+    allowedWeaponTags: ['AoE', 'Control'],
+    bannedWeaponTags: []
+  },
+  {
+    id: 'verdant_heavy_defense',
+    name: 'Verdant Rootwall',
+    family: 'Verdant',
+    variant: 'Defense',
+    baseBand: 7,
+    baseDamage: 4,
+    mitigationMultiplier: 0.35,
+    governingAttr: 'SPR',
+    governingElem: 'Verdant',
+    scalars: {
+      scope: 1.0,
+      potency: 0.85,
+      uptime: 1.5,
+      reliability: 1.0,
+      mobility: 0.75,
+      ccCap: 1.0,
+      reaction: 1.15,
+      cooldown: 1.0,
+      risk: 0.75
+    },
+    description: '65% mitigation',
+    duration: 3800,
+    preferredWeaponTags: ['Guard'],
+    allowedWeaponTags: ['Control', 'Channel'],
+    bannedWeaponTags: []
+  },
+  {
+    id: 'essence_attack',
+    name: 'Aether Dash',
+    family: 'Essence',
+    variant: 'Attack',
+    baseBand: 6,
+    baseDamage: 10,
+    governingAttr: 'INS',
+    governingElem: 'Essence',
+    scalars: {
+      scope: 1.0,
+      potency: 1.15,
+      uptime: 1.0,
+      reliability: 1.0,
+      mobility: 1.1,
+      ccCap: 1.0,
+      reaction: 1.1,
+      cooldown: 1.0,
+      risk: 1.0
+    },
+    description: 'Phase strike',
+    preferredWeaponTags: ['Mobility'],
+    allowedWeaponTags: ['Close', 'Channel'],
+    bannedWeaponTags: []
+  },
+  {
+    id: 'essence_defense',
+    name: 'Essence Shield',
+    family: 'Essence',
+    variant: 'Defense',
+    baseBand: 6,
+    baseDamage: 4,
+    mitigationMultiplier: 0.6,
+    governingAttr: 'INS',
+    governingElem: 'Essence',
+    scalars: {
+      scope: 1.0,
+      potency: 1.0,
+      uptime: 1.15,
+      reliability: 1.0,
+      mobility: 1.05,
+      ccCap: 1.0,
+      reaction: 1.1,
+      cooldown: 1.0,
+      risk: 0.92
+    },
+    description: '60% mitigation',
+    duration: 2100,
+    preferredWeaponTags: ['Guard'],
+    allowedWeaponTags: ['Control', 'Channel'],
+    bannedWeaponTags: []
+  },
+  {
+    id: 'essence_control',
+    name: 'Aether Suspend',
+    family: 'Essence',
+    variant: 'Control',
+    baseBand: 15,
+    baseDamage: 6,
+    governingAttr: 'INS',
+    governingElem: 'Essence',
+    scalars: {
+      scope: 1.0,
+      potency: 1.05,
+      uptime: 1.1,
+      reliability: 1.0,
+      mobility: 1.05,
+      ccCap: 1.15,
+      reaction: 1.2,
+      cooldown: 1.0,
+      risk: 1.0
+    },
+    description: '2.0s Suspend',
+    ccDuration: 2.0,
+    ccType: 'Suspend',
+    preferredWeaponTags: ['Control'],
+    allowedWeaponTags: ['Channel', 'Reach'],
+    bannedWeaponTags: []
+  },
+  {
+    id: 'essence_safe_attack',
+    name: 'Prism Touch',
+    family: 'Essence',
+    variant: 'Attack',
+    baseBand: 4,
+    baseDamage: 8,
+    governingAttr: 'INS',
+    governingElem: 'Essence',
+    scalars: {
+      scope: 1.0,
+      potency: 1.0,
+      uptime: 1.0,
+      reliability: 1.0,
+      mobility: 1.15,
+      ccCap: 1.0,
+      reaction: 1.1,
+      cooldown: 1.0,
+      risk: 0.9
+    },
+    description: 'Phase tap',
+    preferredWeaponTags: ['Mobility'],
+    allowedWeaponTags: ['Finesse', 'Channel'],
+    bannedWeaponTags: []
+  },
+  {
+    id: 'essence_agg_attack',
+    name: 'Essence Fission',
+    family: 'Essence',
+    variant: 'Attack',
+    baseBand: 10,
+    baseDamage: 20,
+    governingAttr: 'INS',
+    governingElem: 'Essence',
+    scalars: {
+      scope: 1.15,
+      potency: 1.35,
+      uptime: 1.0,
+      reliability: 1.0,
+      mobility: 1.1,
+      ccCap: 1.0,
+      reaction: 1.2,
+      cooldown: 1.0,
+      risk: 1.1
+    },
+    description: 'Reality tear',
+    preferredWeaponTags: ['Channel'],
+    allowedWeaponTags: ['AoE', 'Precision'],
+    bannedWeaponTags: []
+  },
+  {
+    id: 'essence_heavy_defense',
+    name: 'Stasis Tower',
+    family: 'Essence',
+    variant: 'Defense',
+    baseBand: 9,
+    baseDamage: 5,
+    mitigationMultiplier: 0.4,
+    governingAttr: 'INS',
+    governingElem: 'Essence',
+    scalars: {
+      scope: 1.0,
+      potency: 1.1,
+      uptime: 1.25,
+      reliability: 1.0,
+      mobility: 0.85,
+      ccCap: 1.0,
+      reaction: 1.15,
+      cooldown: 1.0,
+      risk: 0.8
+    },
+    description: '60% mitigation',
+    duration: 3000,
+    preferredWeaponTags: ['Guard'],
+    allowedWeaponTags: ['Control', 'Channel'],
+    bannedWeaponTags: []
+  },
   {
     id: 'water_special',
     name: 'Torrent Cascade',
@@ -995,11 +1356,9 @@ export const ABILITIES = [
     },
     description: 'Wave burst (R≥0.5)',
     requiresResonance: 0.5,
-    kit: {
-      requiredTags: ['Cleave'],
-      preferredFamilies: ['Blade', 'Pierce'],
-      tags: ['AoE', 'Reach']
-    }
+    preferredWeaponTags: ['Cleave'],
+    allowedWeaponTags: ['AoE', 'Reach'],
+    bannedWeaponTags: []
   },
   {
     id: 'stone_special',
@@ -1023,11 +1382,9 @@ export const ABILITIES = [
     },
     description: 'Massive AoE (R≥0.5)',
     requiresResonance: 0.5,
-    kit: {
-      requiredTags: ['Heavy'],
-      preferredFamilies: ['Blunt'],
-      tags: ['Cleave', 'Knockback']
-    }
+    preferredWeaponTags: ['Heavy'],
+    allowedWeaponTags: ['Cleave', 'Knockback'],
+    bannedWeaponTags: []
   },
   {
     id: 'air_special',
@@ -1051,11 +1408,9 @@ export const ABILITIES = [
     },
     description: 'Mobile vortex (R≥0.5)',
     requiresResonance: 0.5,
-    kit: {
-      requiredTags: ['Cleave'],
-      preferredFamilies: ['Pierce', 'Ranged'],
-      tags: ['AoE', 'Mobility']
-    }
+    preferredWeaponTags: ['Cleave'],
+    allowedWeaponTags: ['AoE', 'Mobility'],
+    bannedWeaponTags: []
   },
   {
     id: 'spark_special',
@@ -1079,11 +1434,9 @@ export const ABILITIES = [
     },
     description: 'Chain AoE (R≥0.5)',
     requiresResonance: 0.5,
-    kit: {
-      requiredTags: ['Ranged'],
-      preferredFamilies: ['Ranged'],
-      tags: ['AoE', 'Precision']
-    }
+    preferredWeaponTags: ['Ranged'],
+    allowedWeaponTags: ['AoE', 'Precision'],
+    bannedWeaponTags: []
   },
   {
     id: 'verdant_special',
@@ -1108,11 +1461,9 @@ export const ABILITIES = [
     },
     description: 'Pulse of damage with restorative bloom',
     requiresResonance: 0.5,
-    kit: {
-      requiredTags: ['Control'],
-      preferredFamilies: ['Arcane', 'Pierce'],
-      tags: ['AoE', 'Channel']
-    }
+    preferredWeaponTags: ['Control'],
+    allowedWeaponTags: ['AoE', 'Channel'],
+    bannedWeaponTags: []
   },
   {
     id: 'essence_special',
@@ -1136,11 +1487,9 @@ export const ABILITIES = [
     },
     description: 'Reality tear (R≥0.5)',
     requiresResonance: 0.5,
-    kit: {
-      requiredTags: ['Channel'],
-      preferredFamilies: ['Arcane', 'Ranged'],
-      tags: ['Control', 'AoE']
-    }
+    preferredWeaponTags: ['Channel'],
+    allowedWeaponTags: ['Control', 'AoE'],
+    bannedWeaponTags: []
   },
   {
     id: 'fire_ultimate',
@@ -1164,11 +1513,9 @@ export const ABILITIES = [
     },
     description: 'Massive fire (R≥0.7)',
     requiresResonance: 0.7,
-    kit: {
-      requiredTags: ['Cleave'],
-      preferredFamilies: ['Blade', 'Blunt'],
-      tags: ['AoE', 'Heavy']
-    }
+    preferredWeaponTags: ['Cleave'],
+    allowedWeaponTags: ['AoE', 'Heavy'],
+    bannedWeaponTags: []
   },
   {
     id: 'water_ultimate',
@@ -1192,11 +1539,9 @@ export const ABILITIES = [
     },
     description: 'Tsunami (R≥0.7)',
     requiresResonance: 0.7,
-    kit: {
-      requiredTags: ['Cleave'],
-      preferredFamilies: ['Blade', 'Pierce', 'Ranged'],
-      tags: ['AoE', 'Control']
-    }
+    preferredWeaponTags: ['Cleave'],
+    allowedWeaponTags: ['AoE', 'Control'],
+    bannedWeaponTags: []
   },
   {
     id: 'stone_ultimate',
@@ -1220,11 +1565,9 @@ export const ABILITIES = [
     },
     description: 'Devastating (R≥0.7)',
     requiresResonance: 0.7,
-    kit: {
-      requiredTags: ['Heavy'],
-      preferredFamilies: ['Blunt'],
-      tags: ['Cleave', 'Knockback']
-    }
+    preferredWeaponTags: ['Heavy'],
+    allowedWeaponTags: ['Cleave', 'Knockback'],
+    bannedWeaponTags: []
   },
   {
     id: 'air_ultimate',
@@ -1248,11 +1591,9 @@ export const ABILITIES = [
     },
     description: 'Massive vortex (R≥0.7)',
     requiresResonance: 0.7,
-    kit: {
-      requiredTags: ['Cleave'],
-      preferredFamilies: ['Pierce', 'Ranged'],
-      tags: ['AoE', 'Mobility']
-    }
+    preferredWeaponTags: ['Cleave'],
+    allowedWeaponTags: ['AoE', 'Mobility'],
+    bannedWeaponTags: []
   },
   {
     id: 'spark_ultimate',
@@ -1276,11 +1617,9 @@ export const ABILITIES = [
     },
     description: 'Chain storm (R≥0.7)',
     requiresResonance: 0.7,
-    kit: {
-      requiredTags: ['Ranged'],
-      preferredFamilies: ['Ranged'],
-      tags: ['AoE', 'Precision']
-    }
+    preferredWeaponTags: ['Ranged'],
+    allowedWeaponTags: ['AoE', 'Precision'],
+    bannedWeaponTags: []
   },
   {
     id: 'verdant_ultimate',
@@ -1305,11 +1644,9 @@ export const ABILITIES = [
     },
     description: 'World root that devastates and renews (R≥0.7)',
     requiresResonance: 0.7,
-    kit: {
-      requiredTags: ['Control'],
-      preferredFamilies: ['Arcane', 'Pierce'],
-      tags: ['AoE', 'Channel']
-    }
+    preferredWeaponTags: ['Control'],
+    allowedWeaponTags: ['AoE', 'Channel'],
+    bannedWeaponTags: []
   },
   {
     id: 'essence_ultimate',
@@ -1333,11 +1670,9 @@ export const ABILITIES = [
     },
     description: 'Void collapse (R≥0.7)',
     requiresResonance: 0.7,
-    kit: {
-      requiredTags: ['Channel'],
-      preferredFamilies: ['Arcane', 'Ranged'],
-      tags: ['Control', 'AoE']
-    }
+    preferredWeaponTags: ['Channel'],
+    allowedWeaponTags: ['Control', 'AoE'],
+    bannedWeaponTags: []
   }
 ];
 

@@ -1,10 +1,4 @@
-import {
-  WEAPONS,
-  COMBAT_STATES,
-  WEAPON_FAMILIES,
-  WEAPON_TAGS,
-  CROSSOVER_PENALTIES
-} from './constants.js';
+import { WEAPONS, COMBAT_STATES, WEAPON_TAGS, CROSSOVER_PENALTIES } from './constants.js';
 
 export const getTimestamp = () => Date.now();
 
@@ -26,34 +20,35 @@ export const createCcEffect = ({ ccType, duration, timestamp = getTimestamp() })
 
 export const calculateResonance = (attrValue, elemValue) => (attrValue / 100) * (elemValue / 100);
 
-export const getWeaponFamily = (weapon) => WEAPON_FAMILIES[weapon] || 'Misc';
-
 export const computeCompatibility = (weapon, ability) => {
   const weaponTags = WEAPON_TAGS[weapon] || [];
-  const kit = ability?.kit || {};
-  const required = kit.requiredTags || [];
-  const abilityTags = kit.tags || [];
-  const preferredFamilies = kit.preferredFamilies || [];
+  const preferred = ability?.preferredWeaponTags || [];
+  const allowed = ability?.allowedWeaponTags || [];
+  const banned = ability?.bannedWeaponTags || [];
 
-  if (!required.length && !abilityTags.length && !preferredFamilies.length) {
-    return 1;
-  }
-
-  if (required.length && required.every((tag) => !weaponTags.includes(tag))) {
+  if (banned.some((tag) => weaponTags.includes(tag))) {
     return 0;
   }
 
-  const requiredOverlap = required.length
-    ? required.filter((tag) => weaponTags.includes(tag)).length / required.length
-    : 1;
+  if (preferred.length === 0 && allowed.length === 0) {
+    return 1;
+  }
 
-  const tagOverlap = abilityTags.length
-    ? abilityTags.filter((tag) => weaponTags.includes(tag)).length / abilityTags.length
-    : 1;
+  const preferredMatches = preferred.filter((tag) => weaponTags.includes(tag));
+  if (preferred.length > 0 && preferredMatches.length > 0) {
+    const ratio = preferredMatches.length / preferred.length;
+    const score = Math.min(1, 0.7 + 0.3 * ratio);
+    return Number(score.toFixed(3));
+  }
 
-  const familyBonus = preferredFamilies.includes(getWeaponFamily(weapon)) ? 0.3 : 0;
-  const score = Math.min(1, 0.5 * requiredOverlap + 0.2 * tagOverlap + familyBonus);
-  return Number(score.toFixed(3));
+  const allowedMatches = allowed.filter((tag) => weaponTags.includes(tag));
+  if (allowed.length > 0 && allowedMatches.length > 0) {
+    const ratio = allowedMatches.length / allowed.length;
+    const score = 0.35 + 0.25 * ratio;
+    return Number(score.toFixed(3));
+  }
+
+  return 0;
 };
 
 export const getCrossoverTier = (score) => {
