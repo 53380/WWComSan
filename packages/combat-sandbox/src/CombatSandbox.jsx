@@ -11,6 +11,7 @@ import {
   WEAPONS,
   WEAPON_TAGS,
   ELEMENT_DESCRIPTIONS,
+  ELEMENT_LANE_SYNERGY,
   initialCharacter,
   initialEnemy
 } from './constants.js';
@@ -37,6 +38,19 @@ const defaultSelectedAbilities = {
   defense: 'fire_defense',
   control: 'fire_control',
   special: 'fire_special'
+};
+
+const getNextResonanceTierTarget = (value) => {
+  if (value >= 0.7) {
+    return null;
+  }
+  if (value >= 0.5) {
+    return { label: 'Merged', threshold: 0.7 };
+  }
+  if (value >= 0.3) {
+    return { label: 'Bonded', threshold: 0.5 };
+  }
+  return { label: 'Touched', threshold: 0.3 };
 };
 
 function useCombatLog(initial = []) {
@@ -498,6 +512,9 @@ export function CombatSandbox({
 
         const top = resonances[0];
         const tier = getResonanceTier(top.value);
+        const elementDescription = ELEMENT_DESCRIPTIONS[elem];
+        const favoredLanes = ELEMENT_LANE_SYNERGY[elem] || [];
+        const nextTier = getNextResonanceTierTarget(top.value);
 
         return (
           <div key={elem} className="mb-2 p-2 bg-gray-800 rounded">
@@ -517,6 +534,31 @@ export function CombatSandbox({
                 {tier}
               </span>
             </div>
+            {elementDescription ? (
+              <p className="text-[11px] text-gray-300 mb-1 leading-snug">{elementDescription}</p>
+            ) : null}
+            {favoredLanes.length > 0 ? (
+              <div className="mb-2">
+                <p className="text-[10px] uppercase tracking-wide text-gray-400 mb-1">Favored lanes</p>
+                <div className="flex flex-wrap gap-1">
+                  {favoredLanes.map((lane) => (
+                    <span
+                      key={`${elem}-${lane}`}
+                      className="px-2 py-0.5 rounded-full bg-gray-700 text-[10px] font-semibold uppercase tracking-wide text-gray-200"
+                    >
+                      {lane}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+            {nextTier ? (
+              <p className="text-[11px] text-gray-300 mb-1">
+                Next tier at {nextTier.threshold.toFixed(2)} ({nextTier.label})
+              </p>
+            ) : (
+              <p className="text-[11px] text-amber-300 mb-1">Max resonance achieved</p>
+            )}
             <div className="text-xs text-gray-400">
               Best: {top.attr} {top.attrVal} × {elem} {top.elemVal} ={' '}
               <span className="font-mono text-white font-bold">{top.value.toFixed(3)}</span>
